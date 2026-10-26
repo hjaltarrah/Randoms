@@ -4,6 +4,7 @@
 
 | المشروع | المجلد |
 |---|---|
+| Howl (لعبة الذيابة، أونلاين بكود روم) | `howl/` |
 | Kizuna Clash | `kizuna-clash/` |
 | Kizuna Clash Android (APK) | `kizuna-clash-app/` |
 | Hyakki Legends | `hyakki-legends/` |
