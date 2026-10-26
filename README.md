@@ -5,6 +5,7 @@
 | المشروع | المجلد |
 |---|---|
 | Howl (لعبة الذيابة، أونلاين بكود روم) | `howl/` |
+| Iron Sands (استراتيجية مثل ريد أليرت، أونلاين بكود) | `iron-sands/` |
 | Kizuna Clash | `kizuna-clash/` |
 | Kizuna Clash Android (APK) | `kizuna-clash-app/` |
 | Hyakki Legends | `hyakki-legends/` |
