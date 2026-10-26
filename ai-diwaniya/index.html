@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ديوانية الذكاء</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;700&display=swap">
+<style>
+/* Layout: one narrow chat column, header with two tabs on top, composer pinned to the bottom */
+:root{
+  --bg:#F2F4F3; --surface:#FFFFFF; --line:#D7DEDA; --fg:#17201C; --muted:#5B6964;
+  --claude:#A0521F; --claude-soft:#F5E8DE;
+  --gpt:#0F7566; --gpt-soft:#DDF0EA;
+  --you:#25302C; --you-fg:#F2F4F3;
+  --danger:#A8241C; --danger-soft:#FBE3E0;
+  --f-display:"Readex Pro","IBM Plex Sans Arabic",Tahoma,sans-serif;
+  --f-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0F1412; --surface:#171E1B; --line:#2A3531; --fg:#E6ECE9; --muted:#93A29C;
+    --claude:#E59C66; --claude-soft:#2B2018;
+    --gpt:#52C4AF; --gpt-soft:#13281F;
+    --you:#E6ECE9; --you-fg:#0F1412;
+    --danger:#FF8F84; --danger-soft:#3A1916;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 var(--f-body);display:flex;flex-direction:column;-webkit-text-size-adjust:100%}
+.wrap{width:100%;max-width:780px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--gpt);outline-offset:2px}
+
+header{background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.bar{display:flex;align-items:center;gap:12px;padding-block:12px 10px}
+.brand{flex:1;min-width:0}
+.brand h1{font:700 1.3rem/1.2 var(--f-display);margin:0;text-wrap:balance}
+.brand h1 .c{color:var(--claude)} .brand h1 .g{color:var(--gpt)}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:.8rem}
+.iconbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:.85rem;font-weight:500}
+.iconbtn svg{width:16px;height:16px}
+.tabs{display:flex;gap:6px;padding-block:0 12px}
+.tab{flex:1;border:1px solid var(--line);background:transparent;border-radius:10px;padding:8px 10px;font-weight:600;font-size:.9rem;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+
+main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.feed{display:flex;flex-direction:column;gap:20px;padding-block:20px 28px}
+
+.empty{border:1px dashed var(--line);border-radius:16px;padding:22px 18px;text-align:center;color:var(--muted)}
+.empty h2{font:700 1.15rem/1.4 var(--f-display);color:var(--fg);margin:0 0 6px}
+.empty p{margin:0 auto 14px;max-width:34em}
+.duo{display:flex;justify-content:center;gap:8px;margin-bottom:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;font:600 .78rem var(--f-display);padding:3px 10px;border-radius:999px}
+.chip.claude{background:var(--claude-soft);color:var(--claude)}
+.chip.gpt{background:var(--gpt-soft);color:var(--gpt)}
+.chip i,.who i{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block}
+
+.ex{display:flex;flex-direction:column;gap:10px}
+.you{align-self:flex-start;max-width:88%;background:var(--you);color:var(--you-fg);border-radius:16px 16px 16px 4px;padding:9px 14px;white-space:pre-wrap;overflow-wrap:break-word}
+.pair{display:grid;gap:10px}
+@media (min-width:640px){.pair{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-width:0}
+.who{display:flex;align-items:center;gap:7px;font:600 .8rem var(--f-display);margin-bottom:4px}
+.claude .who{color:var(--claude)} .gpt .who{color:var(--gpt)}
+.body{white-space:pre-wrap;overflow-wrap:break-word;min-width:0}
+.body code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:var(--bg);padding:1px 5px;border-radius:5px}
+.body.err{color:var(--danger);background:var(--danger-soft);border-radius:10px;padding:8px 10px}
+.body.err small{display:block;opacity:.8;font-size:.78rem;margin-top:4px}
+
+.msg{max-width:90%;border-radius:16px;padding:10px 14px;min-width:0}
+.msg.claude{align-self:flex-start;background:var(--claude-soft);border-start-start-radius:4px}
+.msg.gpt{align-self:flex-end;background:var(--gpt-soft);border-start-end-radius:4px}
+.topic{border-bottom:1px solid var(--line);padding-bottom:12px}
+.topic span{font:600 .72rem var(--f-display);letter-spacing:.04em;color:var(--muted)}
+.topic p{margin:2px 0 0;font:500 1.05rem/1.6 var(--f-display)}
+.endnote{align-self:center;font-size:.8rem;color:var(--muted)}
+
+.setup{display:flex;flex-direction:column;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.setup .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:4px}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+textarea{resize:none;line-height:1.6}
+.primary{border:0;background:var(--fg);color:var(--bg);border-radius:12px;padding:11px 16px;font-weight:600}
+.primary.stop{background:var(--danger);color:#fff}
+.ghost{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:9px 16px;font-weight:600}
+button:disabled{opacity:.5;cursor:default}
+
+.composer{border-top:1px solid var(--line);background:var(--surface);padding-bottom:env(safe-area-inset-bottom,0px)}
+.composer .wrap{display:flex;gap:8px;align-items:flex-end;padding-block:10px}
+.composer textarea{flex:1;max-height:140px;min-height:44px}
+.send{flex:none;width:44px;height:44px;border:0;border-radius:12px;background:var(--fg);color:var(--bg);display:grid;place-items:center}
+.send svg{width:20px;height:20px;transform:scaleX(-1)}
+
+.dots{display:inline-flex;gap:4px;padding:6px 0}
+.dots i{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.35;animation:b 1.2s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,80%,100%{opacity:.25}40%{opacity:.9}}
+@media (prefers-reduced-motion:reduce){.dots i{animation:none;opacity:.6}}
+
+.sheet{position:fixed;inset:0;background:rgba(8,12,10,.5);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.panel{background:var(--surface);width:100%;max-width:560px;max-height:92%;overflow-y:auto;border-radius:18px 18px 0 0;padding-block:20px calc(20px + env(safe-area-inset-bottom,0px));padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+.panel h2{font:700 1.15rem var(--f-display);margin:0}
+.field .keyrow{display:flex;gap:6px}
+.field .keyrow input{flex:1;min-width:0;direction:ltr;text-align:left}
+.field .hint{font-size:.78rem;color:var(--muted);margin-top:4px}
+.field a{color:var(--gpt);direction:ltr;unicode-bidi:isolate}
+.small{font-size:.8rem;color:var(--muted);background:var(--bg);border-radius:10px;padding:10px 12px;margin:0}
+details summary{cursor:pointer;font-size:.85rem;font-weight:600;color:var(--muted)}
+details .models{display:grid;gap:10px;margin-top:10px}
+details input{direction:ltr;text-align:left}
+.actions{display:flex;gap:8px}
+.actions .primary{flex:1}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="bar">
+      <div class="brand">
+        <h1>ديوانية <span class="c">Claude</span> و <span class="g">ChatGPT</span></h1>
+        <p>اسألهم مع بعض، أو خلهم يتناقشون</p>
+      </div>
+      <button class="iconbtn" id="openSettings" type="button" aria-label="الإعدادات">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/></svg>
+        المفاتيح
+      </button>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tabAsk" aria-selected="true" type="button">اسأل الاثنين</button>
+      <button class="tab" role="tab" id="tabDeb" aria-selected="false" type="button">خلهم يتناقشون</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section id="askPanel" class="wrap">
+    <div class="feed" id="askFeed">
+      <div class="empty" id="askEmpty">
+        <div class="duo"><span class="chip claude"><i></i>Claude</span><span class="chip gpt"><i></i>ChatGPT</span></div>
+        <h2>سؤال واحد، جوابين</h2>
+        <p>اكتب سؤالك تحت، ويرد عليك الاثنين في نفس الوقت عشان تقارن بينهم. كل واحد يتذكر المحادثة معاك.</p>
+        <button class="ghost" id="needKeys" type="button">حط مفاتيح الـ API أول</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="debPanel" class="wrap" hidden>
+    <div class="feed">
+      <div class="setup">
+        <div>
+          <label for="topic">موضوع النقاش</label>
+          <textarea id="topic" rows="2" placeholder="مثلاً: أيهم أحسن للمبتدئ، يتعلم Python ولا JavaScript؟"></textarea>
+        </div>
+        <div class="row">
+          <div>
+            <label for="first">منو يبدأ</label>
+            <select id="first"><option value="claude">Claude</option><option value="gpt">ChatGPT</option></select>
+          </div>
+          <div>
+            <label for="turns">كم رد لكل واحد</label>
+            <select id="turns"><option value="2">٢</option><option value="3" selected>٣</option><option value="5">٥</option></select>
+          </div>
+        </div>
+        <button class="primary" id="go" type="button">ابدأ النقاش</button>
+      </div>
+      <div class="feed" id="debFeed" style="padding:0"></div>
+    </div>
+  </section>
+</main>
+
+<div class="composer" id="composer">
+  <div class="wrap">
+    <textarea id="q" rows="1" placeholder="اكتب سؤالك…" aria-label="سؤالك"></textarea>
+    <button class="send" id="send" type="button" aria-label="أرسل">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+    <h2 id="setTitle">مفاتيح الـ API</h2>
+
+    <div class="field">
+      <label for="oaKey">مفتاح ChatGPT (OpenAI)</label>
+      <div class="keyrow"><input id="oaKey" type="password" autocomplete="off" spellcheck="false" placeholder="sk-..."><button class="ghost" type="button" data-show="oaKey">اعرض</button></div>
+      <div class="hint">تسويه من <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com/api-keys</a></div>
+    </div>
+
+    <div class="field">
+      <label for="anKey">مفتاح Claude (Anthropic)</label>
+      <div class="keyrow"><input id="anKey" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-..."><button class="ghost" type="button" data-show="anKey">اعرض</button></div>
+      <div class="hint">تسويه من <a href="https://platform.claude.com/settings/keys" target="_blank" rel="noopener">platform.claude.com/settings/keys</a></div>
+    </div>
+
+    <details>
+      <summary>الموديلات (لا تغيرها إلا إذا تعرف)</summary>
+      <div class="models">
+        <div><label for="oaModel">موديل ChatGPT</label><input id="oaModel" spellcheck="false"></div>
+        <div><label for="anModel">موديل Claude</label><input id="anModel" spellcheck="false"></div>
+      </div>
+    </details>
+
+    <p class="small">المفاتيح تنحفظ بس في متصفح تلفونك، وما تنرسل إلا لـ OpenAI و Anthropic. رصيد الـ API منفصل عن اشتراك ChatGPT Plus أو Claude Pro، وتدفع حسب الاستخدام.</p>
+
+    <div class="actions">
+      <button class="primary" id="saveSettings" type="button">احفظ</button>
+      <button class="ghost" id="clearChat" type="button">امسح المحادثة</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)};
+var NAMES={claude:'Claude',gpt:'ChatGPT'};
+var store={
+  get:function(k){try{return localStorage.getItem(k)||''}catch(e){return ''}},
+  set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+};
+var S={
+  oaKey:store.get('oaKey'), anKey:store.get('anKey'),
+  oaModel:store.get('oaModel')||'chat-latest',
+  anModel:store.get('anModel')||'claude-sonnet-5-5'
+};
+
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function fmt(t){return esc(t).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`\n]+)`/g,'<code>$1</code>')}
+
+/* ---------- API calls ---------- */
+function ApiError(msg,detail){var e=new Error(msg);e.friendly=true;e.detail=detail||'';return e}
+function friendly(status,msg,who){
+  var m=(msg||'').toLowerCase(), t;
+  if(status===401||status===403) t='المفتاح غلط أو ملغي. شيك مفتاح '+NAMES[who]+' في الإعدادات.';
+  else if(status===402||m.indexOf('quota')>-1||m.indexOf('credit')>-1||m.indexOf('billing')>-1) t='ما في رصيد كافي في حساب '+NAMES[who]+'. اشحن رصيد من موقعهم.';
+  else if(status===429) t='وايد طلبات ورا بعض. انطر شوي وجرب مرة ثانية.';
+  else if(status===404||m.indexOf('model')>-1) t='اسم موديل '+NAMES[who]+' غلط. غيره من الإعدادات.';
+  else if(status>=500) t='سيرفر '+NAMES[who]+' فيه مشكلة الحين. جرب بعد شوي.';
+  else t='صار خطأ مع '+NAMES[who]+' ('+status+').';
+  return ApiError(t,msg);
+}
+function merge(msgs){
+  var out=[];
+  msgs.forEach(function(m){
+    var l=out[out.length-1];
+    if(l&&l.role===m.role) l.content+='\n\n'+m.content;
+    else out.push({role:m.role,content:m.content});
+  });
+  return out;
+}
+async function post(url,headers,body,who,signal){
+  var res;
+  try{ res=await fetch(url,{method:'POST',headers:headers,body:JSON.stringify(body),signal:signal}); }
+  catch(e){
+    if(e&&e.name==='AbortError') throw e;
+    throw ApiError('ما قدرت أوصل لـ '+NAMES[who]+'. تأكد من الإنترنت، وإنك فاتح الملف في متصفح Chrome.',String(e&&e.message||e));
+  }
+  var data={}; try{data=await res.json()}catch(e){}
+  if(!res.ok){ var err=friendly(res.status,data&&data.error&&data.error.message,who); err.status=res.status; throw err; }
+  return data;
+}
+async function askClaude(system,messages,signal){
+  if(!S.anKey) throw ApiError('حط مفتاح Claude في الإعدادات أول.');
+  var body={model:S.anModel,max_tokens:2000,messages:merge(messages)};
+  if(system) body.system=system;
+  var base={'content-type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
+  var url='https://api.anthropic.com/v1/messages', d;
+  try{ d=await post(url,Object.assign({'x-api-key':S.anKey},base),body,'claude',signal); }
+  catch(e){
+    if(e.status!==401) throw e;
+    d=await post(url,Object.assign({'authorization':'Bearer '+S.anKey},base),body,'claude',signal);
+  }
+  var text=(d.content||[]).filter(function(b){return b.type==='text'}).map(function(b){return b.text}).join('\n').trim();
+  return text||'(ما رد بشي)';
+}
+async function askGPT(system,messages,signal){
+  if(!S.oaKey) throw ApiError('حط مفتاح ChatGPT في الإعدادات أول.');
+  var msgs=merge(messages);
+  if(system) msgs.unshift({role:'system',content:system});
+  var d=await post('https://api.openai.com/v1/chat/completions',
+    {'content-type':'application/json','authorization':'Bearer '+S.oaKey},
+    {model:S.oaModel,messages:msgs},'gpt',signal);
+  var c=d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content;
+  return (c||'').trim()||'(ما رد بشي)';
+}
+var CALL={claude:askClaude,gpt:askGPT};
+
+/* ---------- UI helpers ---------- */
+function who(w){return '<div class="who"><i></i>'+NAMES[w]+'</div>'}
+function loading(el){el.className='body';el.innerHTML='<span class="dots" role="status" aria-label="يكتب"><i></i><i></i><i></i></span>'}
+function fill(el,t){el.className='body';el.innerHTML=fmt(t)}
+function fail(el,e){
+  el.className='body err';
+  var msg=e&&e.friendly?e.message:'صار خطأ غير متوقع.';
+  var det=e&&e.friendly?e.detail:String(e&&e.message||e);
+  el.innerHTML=esc(msg)+(det?'<small dir="auto">'+esc(det)+'</small>':'');
+}
+function scrollDown(){var m=$('#main');m.scrollTop=m.scrollHeight}
+function hasKeys(){return !!(S.oaKey||S.anKey)}
+function refreshEmpty(){$('#needKeys').hidden=hasKeys()}
+
+/* ---------- Tabs ---------- */
+function setTab(t){
+  var ask=t==='ask';
+  $('#tabAsk').setAttribute('aria-selected',ask);
+  $('#tabDeb').setAttribute('aria-selected',!ask);
+  $('#askPanel').hidden=!ask; $('#debPanel').hidden=ask; $('#composer').hidden=!ask;
+}
+$('#tabAsk').addEventListener('click',function(){setTab('ask')});
+$('#tabDeb').addEventListener('click',function(){setTab('deb')});
+
+/* ---------- Ask both ---------- */
+var hist={claude:[],gpt:[]}, busy=false;
+var q=$('#q');
+function grow(){q.style.height='auto';q.style.height=Math.min(q.scrollHeight,140)+'px'}
+q.addEventListener('input',grow);
+q.addEventListener('keydown',function(e){if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();sendAsk()}});
+$('#send').addEventListener('click',sendAsk);
+
+async function sendAsk(){
+  var text=q.value.trim();
+  if(!text||busy) return;
+  if(!hasKeys()){openSettings();return}
+  q.value='';grow();
+  $('#askEmpty').hidden=true;
+  var ex=document.createElement('div');ex.className='ex';
+  ex.innerHTML='<div class="you" dir="auto"></div><div class="pair">'+
+    '<article class="card claude">'+who('claude')+'<div class="body" dir="auto"></div></article>'+
+    '<article class="card gpt">'+who('gpt')+'<div class="body" dir="auto"></div></article></div>';
+  ex.querySelector('.you').textContent=text;
+  $('#askFeed').appendChild(ex);scrollDown();
+  busy=true;$('#send').disabled=true;
+  await Promise.all(['claude','gpt'].map(async function(w){
+    var el=ex.querySelector('.'+w+' .body');loading(el);
+    hist[w].push({role:'user',content:text});
+    try{
+      var r=await CALL[w](null,hist[w].slice());
+      hist[w].push({role:'assistant',content:r});fill(el,r);
+    }catch(e){hist[w].pop();fail(el,e)}
+  }));
+  busy=false;$('#send').disabled=false;
+}
+
+/* ---------- Debate ---------- */
+var ctrl=null;
+function sysDebate(me,other){
+  return 'You are '+NAMES[me]+', having a live discussion with '+NAMES[other]+' (another AI). A user set this up and is watching. '+
+    'The topic is in the first message; every user-role message after it is what '+NAMES[other]+' just said. '+
+    'Rules: reply in the same language and dialect the topic is written in. Keep each turn under 120 words. '+
+    'Respond directly to '+NAMES[other]+"'s latest point, say clearly where you agree or disagree and why, and add something new. "+
+    'No greetings, no sign-offs, no headings.';
+}
+function setRunning(on){
+  var b=$('#go');
+  b.textContent=on?'وقّف النقاش':'ابدأ النقاش';
+  b.classList.toggle('stop',on);
+  $('#topic').disabled=on;$('#first').disabled=on;$('#turns').disabled=on;
+}
+$('#go').addEventListener('click',async function(){
+  if(ctrl){ctrl.abort();return}
+  var topic=$('#topic').value.trim();
+  if(!topic){$('#topic').focus();return}
+  if(!S.oaKey||!S.anKey){openSettings();return}
+  var turns=+$('#turns').value, first=$('#first').value, second=first==='claude'?'gpt':'claude';
+  var feed=$('#debFeed');feed.innerHTML='';
+  var head=document.createElement('div');head.className='topic';
+  head.innerHTML='<span>الموضوع</span><p dir="auto"></p>';head.querySelector('p').textContent=topic;
+  feed.appendChild(head);
+  var transcript=[], done=true;
+  ctrl=new AbortController();setRunning(true);
+  try{
+    for(var i=0;i<turns*2;i++){
+      var w=i%2?second:first, other=w==='claude'?'gpt':'claude';
+      var b=document.createElement('div');b.className='msg '+w;
+      b.innerHTML=who(w)+'<div class="body" dir="auto"></div>';
+      feed.appendChild(b);var el=b.querySelector('.body');loading(el);scrollDown();
+      var msgs=[{role:'user',content:'الموضوع: '+topic+(i===0?'\n\nابدأ أنت النقاش.':'')}].concat(
+        transcript.map(function(t){return {role:t.who===w?'assistant':'user',content:t.text}}));
+      try{
+        var r=await CALL[w](sysDebate(w,other),msgs,ctrl.signal);
+        transcript.push({who:w,text:r});fill(el,r);scrollDown();
+      }catch(e){
+        done=false;
+        if(e&&e.name==='AbortError'){b.remove()}else{fail(el,e)}
+        break;
+      }
+    }
+  }finally{
+    var end=document.createElement('div');end.className='endnote';
+    end.textContent=done?'خلص النقاش':'توقف النقاش';feed.appendChild(end);scrollDown();
+    ctrl=null;setRunning(false);
+  }
+});
+
+/* ---------- Settings ---------- */
+function openSettings(){
+  $('#oaKey').value=S.oaKey;$('#anKey').value=S.anKey;
+  $('#oaModel').value=S.oaModel;$('#anModel').value=S.anModel;
+  $('#sheet').hidden=false;
+  setTimeout(function(){(S.oaKey?$('#saveSettings'):$('#oaKey')).focus()},50);
+}
+function closeSettings(){$('#sheet').hidden=true}
+$('#openSettings').addEventListener('click',openSettings);
+$('#needKeys').addEventListener('click',openSettings);
+$('#sheet').addEventListener('click',function(e){if(e.target.id==='sheet')closeSettings()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSettings()});
+document.querySelectorAll('[data-show]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var inp=document.getElementById(btn.dataset.show);
+    var show=inp.type==='password';inp.type=show?'text':'password';btn.textContent=show?'اخفِ':'اعرض';
+  });
+});
+$('#saveSettings').addEventListener('click',function(){
+  S.oaKey=$('#oaKey').value.trim();S.anKey=$('#anKey').value.trim();
+  S.oaModel=$('#oaModel').value.trim()||'chat-latest';
+  S.anModel=$('#anModel').value.trim()||'claude-sonnet-5-5';
+  store.set('oaKey',S.oaKey);store.set('anKey',S.anKey);store.set('oaModel',S.oaModel);store.set('anModel',S.anModel);
+  refreshEmpty();closeSettings();
+});
+$('#clearChat').addEventListener('click',function(){
+  hist={claude:[],gpt:[]};
+  var f=$('#askFeed');Array.prototype.slice.call(f.querySelectorAll('.ex')).forEach(function(n){n.remove()});
+  $('#askEmpty').hidden=false;$('#debFeed').innerHTML='';
+  closeSettings();
+});
+
+refreshEmpty();
+if(!hasKeys()) openSettings();
+})();
+</script>
+</body>
+</html>

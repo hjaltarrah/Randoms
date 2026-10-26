@@ -1,0 +1,72 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kizuna Clash App</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Tajawal:wght@500;700;800&display=swap">
+<style>
+/* One bright festival card: the app badge on top, one big download button, then the four install steps. Always daytime. */
+:root {
+  --ink: #2b2340; --paper: #fff8ec; --panel: #ffffff; --muted: #6b6380;
+  --sky: #6cc8ff; --sand: #f7e1ad; --red: #ff4b5c; --gold: #ffc93c; --green: #2fc27e;
+  --display: "Dela Gothic One", "Arial Black", Impact, sans-serif;
+  --body: "Tajawal", "Segoe UI", "Noto Sans Arabic", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-weight: 500;
+  background-image: radial-gradient(circle at 12px 12px, rgba(255,143,184,.18) 3px, transparent 3.5px); background-size: 28px 28px; }
+.wrap { max-width: 520px; margin: 0 auto; padding-block: 20px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 16px; }
+.hero { position: relative; overflow: hidden; border: 3px solid var(--ink); border-radius: 22px; box-shadow: 0 5px 0 var(--ink);
+  background: linear-gradient(var(--sky), #bfe9ff 58%, var(--sand) 58%); padding: 22px 18px 18px; display: grid; justify-items: center; gap: 10px; text-align: center; }
+.hero img { width: 112px; height: 112px; border-radius: 26px; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); background: #fff; }
+.hero h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 32px; line-height: 1; color: #fff; -webkit-text-stroke: 2.5px var(--ink); paint-order: stroke; text-shadow: 0 4px 0 var(--ink); }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.chip { background: #fff; border: 2px solid var(--ink); border-radius: 99px; padding: 2px 10px; font-size: 13px; font-weight: 800; direction: ltr; font-variant-numeric: tabular-nums; }
+.go { display: block; box-sizing: border-box; text-align: center; text-decoration: none; width: 100%; border: 3px solid var(--ink); border-radius: 18px; background: var(--red); color: #fff; font: 800 21px/1.2 var(--body);
+  padding: 16px; box-shadow: 0 5px 0 var(--ink); cursor: pointer; }
+.go:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--ink); }
+.go:disabled { opacity: .6; cursor: default; }
+.go:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.status { margin: 0; min-height: 1.5em; text-align: center; font-weight: 800; font-size: 15px; }
+.status.ok { color: #138a55; } .status.bad { color: #c8283a; }
+.card { background: var(--panel); border: 3px solid var(--ink); border-radius: 18px; box-shadow: 0 4px 0 var(--ink); padding: 14px 16px; }
+.card h2 { margin: 0 0 10px; font-size: 18px; font-weight: 800; text-wrap: balance; }
+ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; counter-reset: s; }
+ol li { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; font-size: 16px; line-height: 1.55; }
+ol li::before { counter-increment: s; content: counter(s); width: 30px; height: 30px; border-radius: 50%; background: var(--gold); border: 2.5px solid var(--ink);
+  display: grid; place-items: center; font-family: var(--display); font-size: 15px; line-height: 1; }
+ol li > span { min-width: 0; }
+b { font-weight: 800; }
+.en { direction: ltr; unicode-bidi: isolate; font-weight: 800; }
+.note { font-size: 15px; line-height: 1.6; margin: 0; }
+.note + .note { margin-top: 8px; }
+</style>
+
+<div class="wrap" dir="rtl" lang="ar">
+  <section class="hero">
+    <img src="icon.png" alt="أيقونة Kizuna Clash" width="112" height="112">
+    <h1 dir="ltr">KIZUNA CLASH</h1>
+    <div class="meta"><span class="chip" id="ver">Android · v3.1</span><span class="chip" id="size">0.9 MB</span></div>
+  </section>
+
+  <a class="go" id="dl" href="KizunaClash.apk" download="KizunaClash.apk">تحميل اللعبة</a>
+
+  <section class="card">
+    <h2>طريقة التثبيت</h2>
+    <ol>
+      <li><span>اضغط <b>تحميل اللعبة</b> فوق، ووافق على حفظ الملف <span class="en">KizunaClash.apk</span>.</span></li>
+      <li><span>افتح الملف من الإشعار أو من <b>Downloads</b>. إذا طلب التلفون السماح بتثبيت التطبيقات من هذا المصدر، فعّلها وارجع.</span></li>
+      <li><span>اضغط <b>Install</b>. إذا طلع تحذير من Play Protect، اضغط <b>More details</b> ثم <b>Install anyway</b>.</span></li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>إذا رفض التثبيت</h2>
+    <p class="note">في تلفونات سامسونج الجديدة فيه خاصية اسمها <b>Auto Blocker</b> تمنع أي تطبيق من برا المتجر. سكّرها من <span class="en">Settings → Security and privacy → Auto Blocker</span>، ثبّت اللعبة، وبعدين ترجّعها إذا تبي.</p>
+    <p class="note">تقدر ترسل رابط هالصفحة أو ملف <span class="en">KizunaClash.apk</span> لربعك بالواتساب أو التليقرام، ويثبتونه بنفس الخطوات.</p>
+  </section>
+</div>
+
+</body></html>

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>مشاريعي</title>
+<meta name="description" content="ألعاب وأدوات سويتها مع Claude من التلفون">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;700&family=Shippori+Mincho:wght@800&display=swap">
+<style>
+/* Layout: one column; an ink header band, then two shelves (games, tools) of link cards. Each card's cover uses that project's own colours. */
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --line:#d5dbe2; --ink:#141a22; --muted:#596473;
+  --band:#141a22; --band-fg:#f1f4f7; --band-muted:#a9b4c2; --note:#8a4b12; --note-soft:#fbeedd;
+  --f-display:"Readex Pro","IBM Plex Sans Arabic",Tahoma,sans-serif;
+  --f-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
+  --f-kanji:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1217; --surface:#161c23; --line:#27303a; --ink:#e8edf2; --muted:#98a4b2;
+    --band:#070a0e; --band-fg:#eef2f6; --band-muted:#8e9aa8; --note:#f2b06a; --note-soft:#2d2215;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 var(--f-body)}
+.wrap{max-width:880px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+a:focus-visible{outline:3px solid #3a8dde;outline-offset:3px;border-radius:14px}
+
+header{background:var(--band);color:var(--band-fg);padding-top:env(safe-area-inset-top,0px)}
+header .wrap{padding-block:34px 30px;display:grid;gap:8px}
+h1{margin:0;font:700 2.2rem/1.2 var(--f-display);text-wrap:balance}
+.lede{margin:0;color:var(--band-muted);max-width:40em}
+.count{display:flex;gap:18px;flex-wrap:wrap;margin-top:6px;font-size:.9rem;color:var(--band-muted)}
+.count b{color:var(--band-fg);font:700 1.1rem var(--f-display);font-variant-numeric:tabular-nums;margin-inline-end:4px}
+
+main .wrap{padding-block:28px calc(48px + env(safe-area-inset-bottom,0px));display:grid;gap:34px}
+section{display:grid;gap:14px}
+h2{margin:0;font:700 1.25rem/1.4 var(--f-display);display:flex;align-items:baseline;gap:10px}
+h2 small{font:500 .85rem var(--f-body);color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+
+.card{display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;align-items:start;padding:14px;background:var(--surface);border:1px solid var(--line);border-radius:16px;text-decoration:none;transition:transform .15s,border-color .15s}
+.card:hover{transform:translateY(-2px);border-color:var(--c1)}
+.cover{width:64px;height:64px;border-radius:14px;display:grid;place-items:center;background:var(--c1);color:var(--c2);font:700 1.7rem/1 var(--f-display);box-shadow:inset 0 -6px 0 rgba(0,0,0,.18)}
+.cover.kanji{font-family:var(--f-kanji);font-weight:800;font-size:2rem}
+.cover.lat{direction:ltr;letter-spacing:-.02em}
+.meta{display:grid;gap:3px;min-width:0}
+.meta b{font:700 1.05rem/1.35 var(--f-display);direction:ltr;text-align:right;unicode-bidi:plaintext}
+.meta span{color:var(--muted);font-size:.92rem;line-height:1.55}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.tag{font-size:.74rem;font-weight:600;padding:1px 9px;border-radius:999px;background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.tag.note{background:var(--note-soft);color:var(--note);border-color:transparent}
+
+footer{color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>مشاريعي</h1>
+    <p class="lede">ألعاب وأدوات سويتها مع Claude، كلها من التلفون. اضغط على أي واحد وافتحه على طول.</p>
+    <div class="count"><span><b>7</b>ألعاب</span><span><b>2</b>أدوات</span></div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section aria-labelledby="hGames">
+      <h2 id="hGames">الألعاب</h2>
+      <div class="grid">
+        <a class="card" href="kizuna-clash/" style="--c1:#ff4b5c;--c2:#fff">
+          <span class="cover kanji">絆</span>
+          <span class="meta"><b>Kizuna Clash</b><span>لعبة كروت يوكاي بأسلوب شد الحبل، بمهرجان ياباني قديم.</span>
+            <span class="tags"><span class="tag">ضد الكمبيوتر</span><span class="tag note">ضد ربعك: داخل Claude بس</span></span></span>
+        </a>
+        <a class="card" href="kizuna-clash-app/" style="--c1:#ffc93c;--c2:#2b2340">
+          <span class="cover lat">APK</span>
+          <span class="meta"><b>Kizuna Clash Android</b><span>نسخة الأندرويد. حمّلها وثبتها على تلفونك.</span>
+            <span class="tags"><span class="tag">أندرويد</span></span></span>
+        </a>
+        <a class="card" href="hyakki-legends/" style="--c1:#e5432c;--c2:#fff9ec">
+          <span class="cover kanji">百</span>
+          <span class="meta"><b>Hyakki Legends</b><span>لعبة جاتشا وحوش يوكاي: استدعاء، فريق، ومعارك بقلعة يابانية.</span>
+            <span class="tags"><span class="tag">قصة ومعارك</span><span class="tag note">الأرينا: داخل Claude بس</span></span></span>
+        </a>
+        <a class="card" href="saltwake/" style="--c1:#1f6f86;--c2:#f6e7c8">
+          <span class="cover lat">SW</span>
+          <span class="meta"><b>Saltwake</b><span>مغامرة قراصنة: تصيد وحوش، تبني طاقمك، وتتحدى المدربين بين الجزر.</span>
+            <span class="tags"><span class="tag">مغامرة</span><span class="tag note">الأونلاين: داخل Claude بس</span></span></span>
+        </a>
+        <a class="card" href="ember-isle/" style="--c1:#2b2452;--c2:#ff9a3d">
+          <span class="cover lat">EI</span>
+          <span class="meta"><b>Ember Isle</b><span>جزيرة وحوش تصيدها وتقاتل فيها بأسلوب ألعاب القتال.</span>
+            <span class="tags"><span class="tag">لاعب واحد</span></span></span>
+        </a>
+        <a class="card" href="skyhoop/" style="--c1:#121631;--c2:#f2b35a">
+          <span class="cover lat">SH</span>
+          <span class="meta"><b>Skyhoop</b><span>فريقين على مكانس طايرة فوق الغيوم، ٣ ضد ٣، كرة وحلقة لكل فريق.</span>
+            <span class="tags"><span class="tag">3D</span><span class="tag">لاعب واحد</span></span></span>
+        </a>
+        <a class="card" href="daqqa/" style="--c1:#c8382e;--c2:#f2e8d5">
+          <span class="cover">دقة</span>
+          <span class="meta"><b>Daqqa</b><span>١٠٠ لعبة إيقاع قصيرة، كل وحدة كم ثانية، وتصير أسرع.</span>
+            <span class="tags"><span class="tag">لاعب واحد</span><span class="tag note">اللوبي مع ربعك: داخل Claude بس</span></span></span>
+        </a>
+      </div>
+    </section>
+
+    <section aria-labelledby="hTools">
+      <h2 id="hTools">الأدوات</h2>
+      <div class="grid">
+        <a class="card" href="thomas-wade-guide/" style="--c1:#0f8a59;--c2:#fff">
+          <span class="cover lat">EMA</span>
+          <span class="meta"><b>دليل توماس ويد</b><span>قواعد البرايس أكشن، قائمة قبل الصفقة، وحاسبة عدد العقود.</span>
+            <span class="tags"><span class="tag">تداول</span></span></span>
+        </a>
+        <a class="card" href="ai-diwaniya/" style="--c1:#a0521f;--c2:#ddf0ea">
+          <span class="cover">AI</span>
+          <span class="meta"><b>ديوانية الذكاء</b><span>اسأل Claude و ChatGPT مع بعض، أو خلهم يتناقشون. يحتاج مفاتيح API.</span>
+            <span class="tags"><span class="tag">Claude + ChatGPT</span></span></span>
+        </a>
+      </div>
+    </section>
+
+    <footer>اللعب الأونلاين مع ربعك يعتمد على أدوات موجودة داخل Claude، فهني الألعاب تشتغل بدونه.</footer>
+  </div>
+</main>
+</body>
+</html>

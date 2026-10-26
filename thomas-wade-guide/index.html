@@ -1,0 +1,652 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>دليل توماس ويد</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Noto+Kufi+Arabic:wght@700;800&display=swap">
+<style>
+/* Layout: one RTL column like a trader's desk card; sticky chip bar to jump between sections; tools get cards, rules stay flat lists. */
+:root {
+  --bg: #eef2f0;
+  --surface: #ffffff;
+  --ink: #15201b;
+  --muted: #56655e;
+  --line: #d6dfda;
+  --bull: #0f8a59;
+  --bear: #cf3b33;
+  --ema: #b97c06;
+  --chip: #e2e9e5;
+  --bull-soft: #dcf1e7;
+  --bear-soft: #f8e1df;
+  --ema-soft: #f6ead0;
+  --f-display: "Noto Kufi Arabic", "IBM Plex Sans Arabic", Tahoma, sans-serif;
+  --f-body: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, system-ui, sans-serif;
+  --f-num: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1311; --surface: #151e1a; --ink: #e4ece8; --muted: #92a59c; --line: #25332d;
+    --bull: #2fc48b; --bear: #ff6a5c; --ema: #f0b23a; --chip: #1d2924;
+    --bull-soft: #143327; --bear-soft: #3a1c1a; --ema-soft: #352a12;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1311; --surface: #151e1a; --ink: #e4ece8; --muted: #92a59c; --line: #25332d;
+  --bull: #2fc48b; --bear: #ff6a5c; --ema: #f0b23a; --chip: #1d2924;
+  --bull-soft: #143327; --bear-soft: #3a1c1a; --ema-soft: #352a12;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.75; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.page { direction: rtl; }
+.wrap { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header.top { padding-block: 28px 14px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand svg { flex: none; }
+h1 { font-family: var(--f-display); font-weight: 800; font-size: 1.9rem; line-height: 1.3; margin: 0; text-wrap: balance; }
+.sub { color: var(--muted); margin: 6px 0 0; font-size: .95rem; }
+.sub b { font-family: var(--f-num); font-weight: 600; color: var(--ink); }
+
+nav.chips { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+nav.chips .scroller { display: flex; gap: 8px; overflow-x: auto; padding-block: 10px; scrollbar-width: none; }
+nav.chips .scroller::-webkit-scrollbar { display: none; }
+nav.chips a { flex: none; text-decoration: none; color: var(--ink); background: var(--chip); border-radius: 999px; padding: 4px 14px; font-size: .9rem; font-weight: 500; white-space: nowrap; }
+nav.chips a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, label.check:focus-within { outline: 3px solid var(--ema); outline-offset: 2px; }
+
+main { display: grid; gap: 40px; padding-block: 24px 48px; }
+section { scroll-margin-top: 70px; display: grid; gap: 14px; min-width: 0; }
+h2 { font-family: var(--f-display); font-weight: 700; font-size: 1.35rem; margin: 0; line-height: 1.4; text-wrap: balance; }
+h2 small { display: block; font-family: var(--f-body); font-weight: 500; font-size: .85rem; color: var(--muted); margin-top: 2px; }
+h3 { font-size: 1rem; margin: 0; font-weight: 700; }
+p { margin: 0; }
+.en { font-family: var(--f-num); font-size: .85em; direction: ltr; unicode-bidi: isolate; }
+
+ul.rules { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+ul.rules li { position: relative; padding-right: 22px; }
+ul.rules li::before { content: ""; position: absolute; right: 2px; top: .72em; width: 8px; height: 8px; border-radius: 2px; background: var(--muted); }
+ul.rules li.buy::before { background: var(--bull); }
+ul.rules li.sell::before { background: var(--bear); }
+ul.rules li.key::before { background: var(--ema); }
+ul.no li::before { content: "✕"; width: auto; height: auto; background: none; color: var(--bear); top: 0; font-weight: 700; font-size: .9rem; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 14px; min-width: 0; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 600px) { .two { grid-template-columns: 1fr; } }
+figure { margin: 0; display: grid; gap: 6px; }
+figure svg { width: 100%; max-width: 360px; height: auto; display: block; }
+figcaption { font-size: .85rem; color: var(--muted); }
+
+/* checklist */
+.checklist { display: grid; gap: 8px; }
+label.check { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; padding: 10px 12px; border-radius: 10px; background: var(--bg); cursor: pointer; }
+label.check input { width: 22px; height: 22px; margin: 3px 0 0; accent-color: var(--bull); }
+label.check .t, label.check b { display: block; }
+label.check .d { color: var(--muted); font-size: .9rem; }
+label.check:has(input:checked) { background: var(--bull-soft); }
+.status { border-radius: 10px; padding: 10px 14px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.status.wait { background: var(--ema-soft); }
+.status.go { background: var(--bull-soft); color: var(--bull); }
+.status .count { font-family: var(--f-num); }
+
+button { font: inherit; font-weight: 700; border: 1px solid var(--line); background: var(--chip); color: var(--ink); border-radius: 10px; padding: 8px 14px; cursor: pointer; }
+button.win { background: var(--bull); border-color: var(--bull); color: var(--surface); }
+button.loss { background: var(--bear); border-color: var(--bear); color: var(--surface); }
+.btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* calculator */
+.fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 420px) { .fields { grid-template-columns: 1fr; } }
+.field { display: grid; gap: 4px; min-width: 0; }
+.field label { font-size: .85rem; color: var(--muted); font-weight: 500; }
+.hint { margin: 8px 0 0; font-size: .85rem; color: var(--muted); }
+.field input, .field select { font-family: var(--f-num); font-size: 1.05rem; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); width: 100%; min-width: 0; direction: ltr; text-align: right; }
+.field select { font-family: var(--f-body); direction: rtl; }
+.result { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; border-top: 1px dashed var(--line); padding-top: 14px; }
+.big { font-family: var(--f-num); font-weight: 600; font-size: 3rem; line-height: 1; text-align: center; min-width: 84px; }
+.big small { display: block; font-family: var(--f-body); font-size: .8rem; font-weight: 500; color: var(--muted); margin-top: 6px; }
+.lines { display: grid; gap: 2px; font-size: .95rem; min-width: 0; }
+.lines .row { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--line); padding-block: 3px; }
+.lines .row span:last-child { font-family: var(--f-num); font-variant-numeric: tabular-nums; }
+.note { border-radius: 10px; padding: 10px 12px; font-size: .92rem; }
+.note.bad { background: var(--bear-soft); }
+.note.ok { background: var(--bull-soft); }
+
+/* daily ladder */
+.ladder { display: grid; gap: 6px; }
+.rung { display: grid; grid-template-columns: 110px 1fr; gap: 10px; padding: 8px 12px; border-radius: 10px; background: var(--bg); align-items: center; }
+.rung .k { font-weight: 700; font-size: .9rem; }
+.rung.on { outline: 2px solid currentColor; }
+.rung.r-loss1 { color: var(--ema); }
+.rung.r-loss2 { color: var(--bear); }
+.rung.r-loss3 { color: var(--bear); }
+.rung.r-win2 { color: var(--bull); }
+.rung .v { color: var(--ink); font-size: .92rem; }
+.rung:not(.on) { color: var(--muted); }
+.rung:not(.on) .v { color: var(--muted); }
+.trail { display: flex; gap: 6px; flex-wrap: wrap; min-height: 34px; align-items: center; }
+.pill { font-family: var(--f-num); font-weight: 600; padding: 2px 10px; border-radius: 999px; font-size: .9rem; }
+.pill.W { background: var(--bull-soft); color: var(--bull); }
+.pill.L { background: var(--bear-soft); color: var(--bear); }
+.empty { color: var(--muted); font-size: .9rem; }
+.verdict { font-weight: 700; padding: 10px 14px; border-radius: 10px; background: var(--bg); }
+.verdict.v-stop { background: var(--bear-soft); color: var(--bear); }
+.verdict.v-b15 { background: var(--bear-soft); }
+.verdict.v-b5 { background: var(--ema-soft); }
+.verdict.v-win { background: var(--bull-soft); color: var(--bull); }
+
+/* tables */
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+th, td { text-align: right; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; font-size: .85rem; }
+td.num { font-family: var(--f-num); font-variant-numeric: tabular-nums; direction: ltr; text-align: right; }
+
+footer { color: var(--muted); font-size: .85rem; padding-block: 0 40px; display: grid; gap: 6px; }
+ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; counter-reset: st; }
+ol.steps li { counter-increment: st; display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+ol.steps li::before { content: counter(st); font-family: var(--f-num); font-weight: 600; width: 28px; height: 28px; border-radius: 50%; background: var(--ema-soft); color: var(--ema); display: grid; place-items: center; }
+ol.steps li b { display: block; }
+ol.steps li span { color: var(--muted); font-size: .92rem; }
+.lvl { display: inline-block; font-family: var(--f-body); font-size: .72rem; font-weight: 700; color: var(--bull); background: var(--bull-soft); border-radius: 999px; padding: 1px 9px; margin-inline-start: 8px; vertical-align: middle; }
+h3.sub { color: var(--muted); font-size: .92rem; font-weight: 700; margin-top: 4px; }
+dl.terms { margin: 0; display: grid; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+dl.terms div { display: grid; grid-template-columns: 9.5em 1fr; gap: 12px; padding: 10px 14px; border-top: 1px solid var(--line); }
+dl.terms div:first-child { border-top: 0; }
+dl.terms dt { font-weight: 700; }
+dl.terms dt .en { display: block; color: var(--muted); font-weight: 500; }
+dl.terms dd { margin: 0; font-size: .95rem; }
+@media (max-width: 460px) { dl.terms div { grid-template-columns: 1fr; gap: 2px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="page" lang="ar" dir="rtl">
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">
+        <svg width="34" height="40" viewBox="0 0 34 40" aria-hidden="true">
+          <line x1="8" y1="6" x2="8" y2="34" style="stroke: var(--bear)" stroke-width="2"/>
+          <rect x="4" y="12" width="8" height="14" rx="1" style="fill: var(--bear)"/>
+          <line x1="24" y1="2" x2="24" y2="30" style="stroke: var(--bull)" stroke-width="2"/>
+          <rect x="20" y="6" width="8" height="18" rx="1" style="fill: var(--bull)"/>
+        </svg>
+        <div>
+          <h1>دليل توماس ويد</h1>
+        </div>
+      </div>
+      <p class="sub">برايس أكشن · <b>EMA 21</b> · جارتك <b>MES 15 دقيقة</b>. افتحه جنبك وانت تتداول.</p>
+    </header>
+  </div>
+
+  <nav class="chips" aria-label="الأقسام">
+    <div class="wrap">
+      <div class="scroller">
+        <a href="#check">قبل الصفقة</a>
+        <a href="#entry">الدخول والستوب</a>
+        <a href="#count">العد</a>
+        <a href="#reverse">الانعكاس</a>
+        <a href="#full">الانعكاس الكامل</a>
+        <a href="#range">الرنج</a>
+        <a href="#exec">التنفيذ</a>
+        <a href="#context">السياق</a>
+        <a href="#dont">لا تتداول</a>
+        <a href="#calc">كم عقد؟</a>
+        <a href="#day">يومي</a>
+        <a href="#charts">الجارت والسوق</a>
+        <a href="#routine">الروتين</a>
+        <a href="#biz">كبزنس</a>
+        <a href="#terms">المصطلحات</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <main>
+
+      <section id="check" aria-labelledby="h-check">
+        <h2 id="h-check">قبل كل صفقة<small>إذا ناقص شرط واحد، الانتظار هو الصفقة.</small></h2>
+        <div class="card">
+          <div class="checklist" id="checklist">
+            <label class="check"><input type="checkbox" id="c1"><span class="t"><b>السوق وين؟</b><span class="d">ترند صاعد، هابط، ولا رنج. القمم والقيعان، ومكان السعر من الـ EMA.</span></span></label>
+            <label class="check"><input type="checkbox" id="c2"><span class="t"><b>نقطة دخول مهمة</b><span class="d">الـ EMA، خط الترند، أو دعم ومقاومة. ولو اثنين مع بعض أحسن.</span></span></label>
+            <label class="check"><input type="checkbox" id="c3"><span class="t"><b>رجلين تصحيح</b><span class="d">الدخول الأول نتركه، وندخل الثاني.</span></span></label>
+            <label class="check"><input type="checkbox" id="c8"><span class="t"><b>السياق صح، مو F2</b><span class="d">الصفقة مع الترند، والترند ما خلص دوره (ما صار كسر خط وبعده قمة أو قاع جديد).</span></span></label>
+            <label class="check"><input type="checkbox" id="c4"><span class="t"><b>شمعة إشارة صح</b><span class="d">مو دوجي، ولونها مع اتجاه الصفقة. وإذا كبيرة وايد، شوف الحاسبة.</span></span></label>
+            <label class="check"><input type="checkbox" id="c5"><span class="t"><b>الطريق فاضي للهدف</b><span class="d">ما في مقاومة أو دعم قريب، مو بنص الرنج، ومو لاصق بقمة أو قاع اليوم.</span></span></label>
+            <label class="check"><input type="checkbox" id="c6"><span class="t"><b>المخاطرة 1% أو أقل</b><span class="d">عدد العقود من الحاسبة تحت.</span></span></label>
+            <label class="check"><input type="checkbox" id="c7"><span class="t"><b>مو وقت خبر قوي</b><span class="d">ولا آخر ساعة أو ساعتين قبل الإغلاق.</span></span></label>
+          </div>
+          <div class="status wait" id="checkStatus" role="status"><span id="checkText">ناقص شروط. انتظر.</span><span class="count" id="checkCount">0/8</span></div>
+          <div class="btns"><button type="button" id="checkReset">صفقة جديدة: امسح القائمة</button></div>
+        </div>
+      </section>
+
+      <section id="entry" aria-labelledby="h-entry">
+        <h2 id="h-entry">الدخول، الستوب، والهدف</h2>
+        <div class="two">
+          <figure>
+            <svg viewBox="0 0 320 200" role="img" aria-label="شمعة إشارة صاعدة: الدخول تك فوقها، الستوب تك تحتها، والهدف بنفس المسافة فوق الدخول">
+              <line x1="40" y1="56" x2="40" y2="112" style="stroke: var(--bear)" stroke-width="2"/>
+              <rect x="32" y="64" width="16" height="40" rx="1" style="fill: var(--bear)"/>
+              <line x1="72" y1="80" x2="72" y2="146" style="stroke: var(--bear)" stroke-width="2"/>
+              <rect x="64" y="88" width="16" height="48" rx="1" style="fill: var(--bear)"/>
+              <line x1="104" y1="110" x2="104" y2="150" style="stroke: var(--bull)" stroke-width="2"/>
+              <rect x="96" y="116" width="16" height="28" rx="1" style="fill: var(--bull)"/>
+              <rect x="90" y="106" width="28" height="48" rx="4" fill="none" style="stroke: var(--ema)" stroke-width="2"/>
+              <line x1="92" y1="46" x2="196" y2="46" style="stroke: var(--ema)" stroke-width="2.5"/>
+              <line x1="92" y1="102" x2="196" y2="102" style="stroke: var(--bull)" stroke-width="2.5" stroke-dasharray="6 4"/>
+              <line x1="92" y1="158" x2="196" y2="158" style="stroke: var(--bear)" stroke-width="2.5" stroke-dasharray="6 4"/>
+              <line x1="150" y1="50" x2="150" y2="98" style="stroke: var(--muted)" stroke-width="1.5"/>
+              <line x1="150" y1="106" x2="150" y2="154" style="stroke: var(--muted)" stroke-width="1.5"/>
+              <text x="310" y="51" direction="rtl" text-anchor="start" style="fill: var(--ema); font: 700 15px var(--f-body)">هدف 1:1</text>
+              <text x="310" y="107" direction="rtl" text-anchor="start" style="fill: var(--bull); font: 700 15px var(--f-body)">دخول: تك فوقها</text>
+              <text x="310" y="163" direction="rtl" text-anchor="start" style="fill: var(--bear); font: 700 15px var(--f-body)">ستوب: تك تحتها</text>
+              <text x="104" y="186" text-anchor="middle" style="fill: var(--muted); font: 500 12px var(--f-body)">شمعة الإشارة</text>
+            </svg>
+            <figcaption>للشراء. والبيع بالعكس: الدخول تك تحت الشمعة، والستوب تك فوقها.</figcaption>
+          </figure>
+          <ul class="rules">
+            <li class="buy">الدخول بأمر Stop تك فوق شمعة الإشارة. إذا ما انكسرت، ما دخلت.</li>
+            <li class="sell">الستوب تك تحت الشمعة، مو بنصها.</li>
+            <li class="key">الهدف تقريبا نفس مسافة الستوب، 1:1. على 15 دقيقة: ستوب 6 نقاط = هدف تقريبا 6 نقاط.</li>
+            <li>لا تحرك الستوب ولا توسعه عشان تعطي الصفقة مجال. أبدا.</li>
+          </ul>
+        </div>
+        <ul class="rules">
+          <li class="key"><b>Inside Bar</b> عند نقطة دخول مهمة: الدخول تك فوقها، بس الستوب تحت قاع الحركة كلها.</li>
+          <li class="key"><b>شمعة إشارة كبيرة</b> والستوب أكبر من اللي تتحمله: عقود أقل، أو العقد الميكرو، أو أمر Limit أعمق داخل الشمعة، أو خلها وعلّمها وتابعها كأنك دخلتها.</li>
+          <li><b>Limit ولا Stop؟</b> يحب الـ Limit: سعر أحسن وستوب أصغر، بس بتفوتك صفقات. الـ Stop يضمن الدخول، بس ممكن سلبج تك أو تكين.</li>
+          <li><b>إدارة الصفقة</b> بعد ما تصير رابح باستمرار: ثلثين سكالب تطلّعهم عند الهدف، وثلث رنر. ستوب الرنر يروح لسعر الدخول (هو ما يحدد متى، واحنا بعد السكالب)، وترفعه تحت كل قاع أعلى جديد.</li>
+          <li><b>كمبتدئ</b> لا تطلع بدري. خل الصفقة توصل الهدف أو الستوب، وتعلّم من خسايرك.</li>
+        </ul>
+      </section>
+
+      <section id="count" aria-labelledby="h-count">
+        <h2 id="h-count">العد<small>كل شي مبني على الرجل.</small></h2>
+        <div class="two">
+          <figure>
+            <svg viewBox="0 0 320 190" role="img" aria-label="ترند صاعد ينزل رجلين: الدخول الأول بعد الرجل الأولى نتركه، والدخول الثاني بعد الرجل الثانية ندخله">
+              <path d="M10 165 C 70 150, 120 120, 170 100 S 260 80, 310 66" fill="none" style="stroke: var(--ema)" stroke-width="3"/>
+              <polyline points="10,150 60,105 95,40 130,82 150,64 185,104 270,22" fill="none" style="stroke: var(--ink)" stroke-width="3" stroke-linejoin="round"/>
+              <circle cx="140" cy="73" r="11" style="fill: var(--ema)"/>
+              <text x="140" y="78" text-anchor="middle" style="fill: var(--bg); font: 700 13px var(--f-num)">1</text>
+              <circle cx="198" cy="88" r="11" style="fill: var(--bull)"/>
+              <text x="198" y="93" text-anchor="middle" style="fill: var(--bg); font: 700 13px var(--f-num)">2</text>
+              <text x="140" y="54" text-anchor="middle" style="fill: var(--muted); font: 500 12px var(--f-body)">نتركه</text>
+              <text x="226" y="122" text-anchor="middle" style="fill: var(--bull); font: 700 12px var(--f-body)">ندخله</text>
+              <text x="300" y="80" direction="rtl" text-anchor="start" style="fill: var(--ema); font: 700 11px var(--f-num)">EMA</text>
+            </svg>
+            <figcaption>ترند صاعد ورجلين تصحيح. نفس الشي بالعكس للبيع.</figcaption>
+          </figure>
+          <ul class="rules">
+            <li>ابدأ العد من أعلى قمة بالحركة الحالية. القمم القديمة قبل الترند ما تهم.</li>
+            <li>كل شمعة تكسر قمة اللي قبلها بتك = دخول شراء. وتعدهم: 1، 2، 3.</li>
+            <li>للبيع: كسر قاع الشمعة اللي قبلها بتك.</li>
+            <li>شمعة حمرا وسط رجل صاعدة ما تقطعها، إلا إذا انكسر قاعها.</li>
+          </ul>
+        </div>
+        <ul class="rules">
+          <li class="key"><b>قمة جديدة</b> = العد يرجع صفر. كل اللي قبلها ينمسح.</li>
+          <li class="key"><b>قمة مزدوجة بنفس التك</b> = العد يرجع، وتبدأ من الشمعة هذي. ونفس الشي للقاع المزدوج بعد البيع. بس بتصحيح ترند صاعد، القاع المزدوج الصغير عند الـ EMA يحسب رجل ثانية.</li>
+          <li><b>النسخة الصغيرة:</b> الدخول الأول يشتغل ويضرب الستوب بنفس الشمعة، وهالشمعة تصير الرجل الثانية. راقب الشموع وحدة وحدة.</li>
+          <li><b>نهاية الترند:</b> بترند هابط، كل محاولة شراء تفشل وكل قاع جديد يصفّر العد. الترند الهابط يبقى لين ما ينكسر آخر قمة أدنى.</li>
+        </ul>
+      </section>
+
+      <section id="reverse" aria-labelledby="h-reverse">
+        <h2 id="h-reverse">الانعكاس والفخاخ</h2>
+        <ul class="rules">
+          <li class="key">بعد كسر القناة وقمة أو قاع جديد، أو بعد Overshoot: انطر تأكيد بقاع أعلى (HL) للشراء، أو قمة أدنى (LH) للبيع. والانعكاس الكامل خطواته تحت.</li>
+          <li>الـ <b>Overshoot</b> (كسر خط القناة باتجاه الترند) غالبا يجي قبل كسر الخط أو انعكاس قوي. بعده انطر تأكيد قبل أي دخول.</li>
+          <li>السعر ما وصل خط القناة ووقف بالنص؟ الزخم يضعف.</li>
+          <li class="buy"><b>Failed Second Entry:</b> البايعين دخلوا 2ES بترند صاعد، والسعر كسر فوق شمعتهم. انحبسوا، فتشتري مع الترند. وبالعكس بترند هابط.</li>
+          <li>بدون التأكيد، الدخول الثاني بعد كسر وقمة أو قاع جديد ممكن يكون فخ.</li>
+          <li>أغلب محاولات الانعكاس تفشل. لا تشتري كل ارتداد صغير بترند هابط قوي.</li>
+          <li>بعد سبايك قوي، الترند يكمل بقناة أهدى. هني انطر صفقات أقوى من 2EL عادي.</li>
+        </ul>
+      </section>
+
+      <section id="full" aria-labelledby="h-full">
+        <h2 id="h-full">الانعكاس الكامل<span class="lvl">الدرس 10</span><small>لا تدخل عكس الترند القديم قبل الأربع خطوات.</small></h2>
+        <ol class="steps">
+          <li><div><b>كسر خط ترند صحيح</b><span>الخط يركب على جهة، ونسخته الموازية على الجهة الثانية. الخط اللي يلمس جهة وحدة بس ما يعتمد عليه.</span></div></li>
+          <li><div><b>قمة أو قاع جديد واضح</b><span>القريب من القديم ما يحسب.</span></div></li>
+          <li><div><b>محاولتين فاشلتين</b><span>أصحاب الترند القديم يحاولون مرتين ويفشلون.</span></div></li>
+          <li><div><b>إغلاق عبر الـ EMA</b><span>وبعدين تصحيح يمسك على الـ EMA من الجهة الثانية. بعدها بس تدخل.</span></div></li>
+        </ol>
+        <ul class="rules">
+          <li class="key">الـ EMA حجر عبور: المهم الإغلاق عبره، مو اللمسة.</li>
+          <li>السعر اخترق الـ EMA بقوة بدون أي مقاومة؟ هالترند خلص. لا تشتري تصحيحاته.</li>
+          <li>الاستثناء: رفض متكرر عند الـ EMA ممكن يقلب الترند حتى بدون قمة أو قاع جديد.</li>
+          <li>نمط الانعكاس لازم يتكون عند الـ EMA. إذا السعر بعيد عنه وايد، النمط متأخر.</li>
+          <li>شمعة وحدة شكلها انعكاس (مثل Pin Bar) بنص ترند قوي مو نمط انعكاس. فخ.</li>
+          <li>حركة شبه عمودية وبآخرها شمعة ضخمة = استنزاف. انطر تصحيح أعمق، ولا تطارد.</li>
+        </ul>
+      </section>
+
+      <section id="range" aria-labelledby="h-range">
+        <h2 id="h-range">الرنج</h2>
+        <ul class="rules">
+          <li class="key">علّم السقف والأرضية بدقة. ومرات يكون مستوى من أمس السعر يرجع يختبره.</li>
+          <li>النص <span class="en">No man's land</span>: لا تتداول. بيقطّعك.</li>
+          <li class="sell">أغلب الاختراقات تفشل. اخترق السقف ورجع داخل؟ بيع، مو شراء.</li>
+          <li class="buy"><b>Failed Break Lower:</b> قاع مزدوج عند الأرضية، كسر تحتها، ورجع داخل بشمعة صاعدة قوية. صفقة عالية الاحتمال، والنسخة الأكثر أمان: انطر قاع أعلى بعد الكسر.</li>
+          <li>الاختراق الفاشل كثير يصير قمة أو قاع اليوم.</li>
+          <li>شموع صغيرة متداخلة (كونجشن) = رنج صغير. ابعد. ولو في رنج صغير داخل رنج كبير، الكبير أهم.</li>
+          <li>إذا السعر طلع من الرنج وصار ترند، ارجع لقواعد الترند.</li>
+        </ul>
+        <h3 class="sub">متقدم<span class="lvl">الدرس 11</span></h3>
+        <ul class="rules">
+          <li class="key"><b>اختراق ورجوع:</b> رجع لمكان يجتمع فيه السقف القديم وخط الترند والـ EMA؟ يعطيه 80 إلى 90%. المستوى بروحه تقريبا 50/50.</li>
+          <li><b>الرنج خلص إذا:</b> السعر ما يقدر يسكر فوق الـ EMA، أو رجلين كبار وبعدها شموع صغيرة ودوجي، أو الارتفاعات ما توصل للسقف.</li>
+          <li><b>رنج كبير فيه ترندات حقيقية</b> (مثاله ترند هابط تقريبا 60 نقطة): وقف عكس الاختراقات.</li>
+          <li class="buy"><b>شراء القاع (بالرنج بس):</b> نزول قوي يكسر الأرضية ← دوجي ← حيرة ← قاع جديد وأول بيع ← البيع الثاني (الفخ) يفشل ← شمعة صاعدة قوية: شراء. وبيع القمة بالمقلوب.</li>
+          <li>لا تشتري على الدوجي بدري. انطر الفخ يتكون ويفشل.</li>
+          <li><b>إغلاق أمس</b> مستوى مهم، والسعر كثير يتفاعل معاه. بس تأكيد، مو إشارة بروحه. ولا تشتري وانت داخل على قمة اليوم.</li>
+        </ul>
+      </section>
+
+      <section id="exec" aria-labelledby="h-exec">
+        <h2 id="h-exec">التنفيذ<span class="lvl">الدرس 12</span></h2>
+        <ul class="rules">
+          <li class="key"><b>الليمت:</b> انطر الـ Trigger أول (تك فوق شمعة الإشارة)، بعدين حط ليمت أعمق داخل الشمعة (مثلا بنصها، الستوب ينقص للنص). الثمن: صفقات بتفوتك، ولا تلاحقها.</li>
+          <li>انطر شمعة الإشارة تسكر. لا تدخل وهي بعدها تتكون.</li>
+          <li>السعر وصل لمستوى هدفك وأمر الدخول ما تعبى؟ ألغه.</li>
+          <li class="sell"><b>الستوب ما يتحرك قبل الهدف:</b> لا توسعه ولا تقربه للدخول. الاستثناءات: كونجشن طويل ممكن يطلع لأي جهة، أو ما بان اتجاه خلال تقريبا ساعة (4 شموع على 15 دقيقة): عادي تطلع قريب من التعادل.</li>
+          <li><b>الهدف قريب من 1:1</b> (على جارته 8 لين 10 تك). الهدف الصغير، ربع أو نص الستوب، يقتل الرنر: السعر يضرب الهدف ويرجع يضرب ستوب الرنر قبل لا يكمل.</li>
+          <li><b>شمعة إشارة ضخمة</b> (ستوبها أكبر من 1% من حسابك): لا تدخل فوقها. ليمت أعمق، أو MES بدال ES، أو خلها. وبيوم شموعه كبيرة، ما باع تحت أول شمعة، وانتظر كسر شمعة هابطة أكبر.</li>
+          <li class="buy"><b>الدخول مرة ثانية</b> بعد ستوب بتك: إذا الشمعة سكرت باتجاه الترند، والسعر بعده بجهة الترند من الـ EMA وداخل الخط، وما صار قمة جديدة (أو قاع جديد للشراء)، وفي شمعة إشارة.</li>
+          <li><b>الإضافة (للي عنده خبرة):</b> مع الترند + دخول ثاني + نقطة دخول مهمة + التصحيح اللي قبله خلص. وبس والصفقة الأولى مفتوحة، وأبد مو بعد السكالب. تراها تضاعف مخاطرتك.</li>
+        </ul>
+      </section>
+
+      <section id="context" aria-labelledby="h-context">
+        <h2 id="h-context">السياق والعقلية<span class="lvl">الدرس 13</span></h2>
+        <ul class="rules">
+          <li class="key"><b>F2:</b> دخول ثاني بسياق غلط: عكس الترند، أو بترند خلص دوره (كسر خط وبعده قمة أو قاع جديد) وبدون تأكيد. شكله صفقة قوية، وهو فخ. إذا فشل، تداول عكسه كصفقة سريعة، مو بداية ترند جديد.</li>
+          <li><b>هندسة السوق:</b> كل ما اجتمعت نقاط دخول أكثر بنفس المكان (الـ EMA، خط الترند، قمة أو قاع اليوم)، صارت الصفقة أقوى.</li>
+          <li><b>اختبار الثقة:</b> الصفقة الزينة تحس إن لها نتيجة وحدة. إذا الجهتين مغرية، ما في صفقة.</li>
+          <li>بعد كم خسارة، خوفك من الخسارة يكبر وتصير تترك الصفقة الزينة. ترك صفقة صحيحة غلط تداول، ولا تنقّي (داخل وقتك وحدود يومك).</li>
+          <li>شيّك فريم ثاني: على جارته السريعة، مرة فاتته صفقة كانت واضحة على جارت الخمس دقايق الأبطأ. عندك: شيّك جارت الساعة. وراقب أكثر من سوق، بس لا تبالغ بالعدد.</li>
+          <li>وسّع القناة القصيرة لما السعر يكمل يسوي قمم أو قيعان جديدة. بس مو عشان Overshoot.</li>
+          <li>الأيام الزينة قليلة: يومين بالشهر كفاية. والتعلم ياخذ تقريبا سنتين لين ثلاث.</li>
+        </ul>
+      </section>
+
+      <section id="dont" aria-labelledby="h-dont">
+        <h2 id="h-dont">لا تتداول إذا…</h2>
+        <ul class="rules no">
+          <li>السعر بنص الرنج، أو بكونجشن.</li>
+          <li>داخل <span class="en">Wedge</span> والاتجاه مو واضح.</li>
+          <li>وقت الأخبار الاقتصادية الكبيرة.</li>
+          <li>بتبيع والسعر لاصق بقاع اليوم، أو بتشتري وهو لاصق بقمة اليوم.</li>
+          <li>بتشتري على مقاومة، أو تبيع على دعم.</li>
+          <li>الدخول الأول، أو شمعة الإشارة دوجي.</li>
+          <li>بعد Overshoot وما في تأكيد.</li>
+          <li>ضد الترند لأن شمعة وحدة لونها عكسه.</li>
+          <li>عندك خسارتين ورا بعض وما أخذت استراحتك.</li>
+          <li>آخر ساعة أو ساعتين قبل الإغلاق (وأقل شي آخر 15 لين 30 دقيقة).</li>
+          <li>الجهتين مغرية، وما تحس إن للصفقة نتيجة وحدة.</li>
+          <li>عكس الترند ونمط الانعكاس ناقص خطوة.</li>
+        </ul>
+      </section>
+
+      <section id="calc" aria-labelledby="h-calc">
+        <h2 id="h-calc">كم عقد أدخل؟<small>الستوب = طول شمعة الإشارة + تك للدخول + تك للستوب. الأرقام هني لجارت 15 دقيقة.</small></h2>
+        <div class="card">
+          <div class="fields">
+            <div class="field"><label for="acct">حسابك ($)</label><input id="acct" type="number" inputmode="decimal" min="0" step="100" value="5000"></div>
+            <div class="field"><label for="riskPct">المخاطرة (%)</label><input id="riskPct" type="number" inputmode="decimal" min="0.1" step="0.1" value="1"></div>
+            <div class="field"><label for="mkt">السوق</label>
+              <select id="mkt">
+                <option value="MES" selected>MES · مايكرو S&amp;P</option>
+                <option value="ES">ES · S&amp;P</option>
+                <option value="MNQ">MNQ · مايكرو ناسداك</option>
+                <option value="NQ">NQ · ناسداك</option>
+                <option value="MCL">MCL · مايكرو نفط</option>
+                <option value="CL">CL · نفط</option>
+                <option value="MGC">MGC · مايكرو ذهب</option>
+                <option value="GC">GC · ذهب</option>
+              </select>
+            </div>
+            <div class="field"><label for="bar">طول شمعة الإشارة (فرق السعر)</label><input id="bar" type="number" inputmode="decimal" min="0" step="0.25" value="6"></div>
+          </div>
+          <p class="hint" id="barHint">MES و ES: بالنقاط، مثلا 6.</p>
+          <div class="result" aria-live="polite">
+            <div class="big"><span id="nOut">1</span><small id="nUnit">عقد</small></div>
+            <div class="lines">
+              <div class="row"><span>الستوب</span><span id="stopOut">26 تك</span></div>
+              <div class="row"><span>المسافة بالسعر</span><span id="distOut">6.50</span></div>
+              <div class="row"><span>مخاطرة العقد الواحد</span><span id="perOut">$32.50</span></div>
+              <div class="row"><span>أقصى خسارة مسموحة</span><span id="maxOut">$50.00</span></div>
+              <div class="row"><span>مخاطرتك الكلية</span><span id="totOut">$32.50</span></div>
+              <div class="row"><span>الهدف 1:1</span><span id="tgtOut">6.50</span></div>
+            </div>
+          </div>
+          <div class="note ok" id="calcNote">داخل حدود 1%.</div>
+        </div>
+      </section>
+
+      <section id="day" aria-labelledby="h-day">
+        <h2 id="h-day">قواعد اليوم<small>سجّل كل صفقة تخلص، والقاعدة تطلع لك.</small></h2>
+        <div class="card">
+          <div class="btns">
+            <button type="button" class="win" id="addW">+ ربح</button>
+            <button type="button" class="loss" id="addL">+ خسارة</button>
+            <button type="button" id="undo">تراجع</button>
+            <button type="button" id="newDay">يوم جديد</button>
+          </div>
+          <div class="trail" id="trail"><span class="empty">ما في صفقات اليوم.</span></div>
+          <div class="verdict" id="verdict" role="status">ما بديت. مر على قائمة «قبل كل صفقة».</div>
+          <div class="ladder" id="ladder">
+            <div class="rung r-loss1" id="r-loss1"><span class="k">خسارة</span><span class="v">استراحة قصيرة، تقريبا 5 دقايق.</span></div>
+            <div class="rung r-loss2" id="r-loss2"><span class="k">خسارتين ورا بعض</span><span class="v">استراحة ربع ساعة.</span></div>
+            <div class="rung r-loss3" id="r-loss3"><span class="k">الخسارة الثالثة</span><span class="v">سكّر المنصة. اليوم خلص.</span></div>
+            <div class="rung r-win2" id="r-win2"><span class="k">ربحين أو ثلاث</span><span class="v">وقّف اليوم وانت رابح (إلا بيوم ترند واضح).</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="charts" aria-labelledby="h-charts">
+        <h2 id="h-charts">جارتك وقيمة التك</h2>
+        <ul class="rules">
+          <li class="key"><b>جارتك:</b> MES على 15 دقيقة، مع EMA 21. وجارت الساعة للصورة الكبيرة قبل الافتتاح.</li>
+          <li>هو يتداول على جارت تك سريع (ES 2000 tick)، بس يقول قواعد البرايس أكشن نفسها على كل فريم وكل سوق.</li>
+          <li>على 15 دقيقة: الشمعة أكبر، فالستوب أكبر، والعقود أقل، والصفقات أقل. القواعد نفسها.</li>
+        </ul>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>السوق</th><th>التك</th><th>قيمة التك</th><th>قيمة النقطة</th></tr></thead>
+            <tbody>
+              <tr><td>ES</td><td class="num">0.25</td><td class="num">$12.50</td><td class="num">$50</td></tr>
+              <tr><td>MES</td><td class="num">0.25</td><td class="num">$1.25</td><td class="num">$5</td></tr>
+              <tr><td>NQ</td><td class="num">0.25</td><td class="num">$5.00</td><td class="num">$20</td></tr>
+              <tr><td>MNQ</td><td class="num">0.25</td><td class="num">$0.50</td><td class="num">$2</td></tr>
+              <tr><td>CL · MCL</td><td class="num">0.01</td><td class="num">$10 · $1</td><td class="num">$1,000 · $100</td></tr>
+              <tr><td>GC · MGC</td><td class="num">0.10</td><td class="num">$10 · $1</td><td class="num">$100 · $10</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="rules">
+          <li>بالنفط والذهب، «النقطة» هني يعني حركة دولار كامل بالسعر.</li>
+          <li>هدف لسوق جديد: قيس شموع الإشارة بالصفقات القوية كم يوم، وابدأ من 1:1.</li>
+        </ul>
+      </section>
+
+      <section id="routine" aria-labelledby="h-routine">
+        <h2 id="h-routine">الروتين</h2>
+        <div class="two">
+          <div class="card">
+            <h3>قبل الافتتاح</h3>
+            <ul class="rules">
+              <li>اليوم اللي قبل سكّر شلون؟ قوي بقمم وقيعان أعلى = ميول شراء. ضعيف = ميول بيع. وشوف جارت الساعة: الترند العام وين؟</li>
+              <li>علّم إغلاق أمس، وافتتاح اليوم، وقمة وقاع اليوم وهي تتكون، وأي مستوى من أمس السعر يرجع يختبره.</li>
+              <li>السوق الأمريكي يفتح 4:30 العصر بالكويت ويسكر 11 بالليل (ومن نوفمبر لين مارس: 5:30 و12).</li>
+              <li>حدد: كم صفقة، متى تستريح، ومتى توقف.</li>
+              <li>متأخر؟ افتح الجارتات وانطر كم دقيقة قبل لا تدخل.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>بعد السوق</h3>
+            <ul class="rules">
+              <li>صوّر جارت اليوم وعلّم عليه صفقاتك والأنماط والمستويات.</li>
+              <li>الأيام اللي ما فيها صفقات واضحة، عادي ما تتداول.</li>
+              <li>تدرّب على حساب تجريبي أول، مثل الطيار قبل ما يطير.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="biz" aria-labelledby="h-biz">
+        <h2 id="h-biz">التداول كبزنس<span class="lvl">الدرس 13</span></h2>
+        <ul class="rules">
+          <li class="key"><b>اختبار الـ 30 صفقة:</b> بعد ما تربح بثبات على التجريبي، جرب حساب حقيقي صغير. إذا ما ربحت بـ 30 صفقة على 3000 دولار، ما بتربح على 10000. ارجع للتجريبي. (على 15 دقيقة، 3000 بقاعدة 1% يعني بس شموع لين 5.5 نقطة.)</li>
+          <li>إذا خسارة صغيرة وحدة توترك، حجمك كبير. صغّر لين ما تصير الخسارة الوحدة ولا شي.</li>
+          <li>أيام العطل اللي السوق الأمريكي فيها مسكر والحركة خفيفة: اعتمد على هيكل اليوم اللي قبله.</li>
+          <li><b>شركات التمويل:</b> لا تشتري تقييم قبل ما تكون رابح بثبات على التجريبي. ميزانية ثابتة بالشهر، والـ Drawdown اللي يتحسب نهاية اليوم أريح من اللي يلاحقك وقت التداول. واقرا قوانين كل شركة.</li>
+        </ul>
+      </section>
+
+      <section id="terms" aria-labelledby="h-terms">
+        <h2 id="h-terms">المصطلحات<small>كل كلمة بالكورس، بسطر واحد.</small></h2>
+        <dl class="terms">
+          <div><dt>EMA 21</dt><dd>المتوسط المتحرك الأسي لآخر 21 شمعة. يبين الاتجاه، وهو من أهم نقاط الدخول.</dd></div>
+          <div><dt>شمعة الإشارة<span class="en">Signal Bar</span></dt><dd>الشمعة اللي تدخل فوقها للشراء أو تحتها للبيع. لازم بلون صفقتك، ومو دوجي.</dd></div>
+          <div><dt>الـ Trigger</dt><dd>لما السعر يكسر شمعة الإشارة بتك. قبله ما في صفقة.</dd></div>
+          <div><dt>الرجل<span class="en">Leg</span></dt><dd>شمعة أو أكثر بنفس الاتجاه. التصحيح عادة يجي على رجلين.</dd></div>
+          <div><dt>1EL · 1ES<span class="en">First Entry</span></dt><dd>الدخول الأول للشراء أو البيع بعد الرجل الأولى. ما ندخله بروحه.</dd></div>
+          <div><dt>2EL · 2ES<span class="en">Second Entry</span></dt><dd>الدخول الثاني بعد تصحيح على رجلين، عند نقطة دخول مهمة. هذي الصفقة.</dd></div>
+          <div><dt>نقطة دخول مهمة<span class="en">KEP</span></dt><dd>الـ EMA، خط الترند، أو دعم ومقاومة. كل ما اجتمعت أكثر بنفس المكان، أحسن.</dd></div>
+          <div><dt>HL · LH<span class="en">Higher Low · Lower High</span></dt><dd>قاع أعلى أو قمة أدنى. تأكيد بعد كسر خط وقمة أو قاع جديد، أو بعد Overshoot.</dd></div>
+          <div><dt>F2<span class="en">Failed Second Entry</span></dt><dd>دخول ثاني بسياق غلط: عكس الترند، أو بترند خلص دوره. إذا فشل، تداول عكسه.</dd></div>
+          <div><dt>خلص دوره<span class="en">Played out</span></dt><dd>ترند انكسر خطه وبعدها سوّى قمة أو قاع جديد.</dd></div>
+          <div><dt>اختراق فاشل<span class="en">Failed Breakout</span></dt><dd>اختراق للرنج يفشل ويرجع داخل. نتداول عكسه.</dd></div>
+          <div><dt>رجوع بعد الاختراق<span class="en">Breakout Pullback</span></dt><dd>لحاله تقريبا 50/50. مع المستوى القديم وخط الترند والـ EMA: 80 إلى 90%.</dd></div>
+          <div><dt>Overshoot</dt><dd>كسر خط القناة باتجاه الترند نفسه. علامة تحذير، مو قناة جديدة.</dd></div>
+          <div><dt>كونجشن<span class="en">Congestion</span></dt><dd>شموع صغيرة متداخلة: رنج صغير جدا. ابعد عنه.</dd></div>
+          <div><dt>Wedge</dt><dd>السعر ينضغط بين خطين يقربون من بعض. إذا الاتجاه مو واضح، لا تتداول.</dd></div>
+          <div><dt>سبايك وقناة<span class="en">Spike & Channel</span></dt><dd>حركة قوية سريعة، بعدها الترند يكمل بقناة أهدى.</dd></div>
+          <div><dt>السكالب والرنر<span class="en">Scalp · Runner</span></dt><dd>السكالب الجزء اللي تطلّعه عند الهدف، والرنر الجزء اللي تخليه يمشي.</dd></div>
+          <div><dt>التك<span class="en">Tick</span></dt><dd>أصغر حركة للسعر: 0.25 نقطة بالـ ES و MES، يعني 4 تك = نقطة. (جارت التك حق Wade ما نستخدمه.)</dd></div>
+          <div><dt>الفريم<span class="en">Timeframe</span></dt><dd>مدة الشمعة الوحدة. جارتك 15 دقيقة: كل ربع ساعة شمعة، و26 شمعة بالجلسة الرسمية.</dd></div>
+          <div><dt>الحركة المقاسة<span class="en">Measured Move</span></dt><dd>الرجل الثانية غالبا تقريبا بطول الأولى، وأحيانا أطول.</dd></div>
+          <div><dt>شركة تمويل<span class="en">Prop Firm</span></dt><dd>تعطيك حساب تتداول فيه بعد ما تنجح بتقييم برسوم.</dd></div>
+        </dl>
+      </section>
+
+    </main>
+    <footer>
+      <p>مبني على دروس Thomas Wade اللي لقيتها بالنت، ونفس اللي بالكورس (13 درس: 9 أساسية و4 متقدمة). أرقام الحاسبة أمثلة للتوضيح.</p>
+      <p>التداول، خصوصا العقود الآجلة بالرافعة، فيه مخاطرة عالية وممكن تخسر أكثر من اللي حطيته. هذا شرح تعليمي، مو نصيحة استثمارية.</p>
+    </footer>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function load(k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+
+  /* checklist */
+  var boxes = Array.prototype.slice.call(document.querySelectorAll("#checklist input"));
+  var statusEl = document.getElementById("checkStatus");
+  function upd() {
+    var n = boxes.filter(function (b) { return b.checked; }).length;
+    document.getElementById("checkCount").textContent = n + "/" + boxes.length;
+    var all = n === boxes.length;
+    statusEl.className = "status " + (all ? "go" : "wait");
+    document.getElementById("checkText").textContent = all ? "كل الشروط موجودة. نفّذ وحط الستوب." : "ناقص شروط. انتظر.";
+  }
+  boxes.forEach(function (b) { b.addEventListener("change", upd); });
+  document.getElementById("checkReset").addEventListener("click", function () { boxes.forEach(function (b) { b.checked = false; }); upd(); });
+  upd();
+
+  /* calculator */
+  var M = {
+    MES: { t: 0.25, v: 1.25, full: null }, ES: { t: 0.25, v: 12.5, micro: "MES" },
+    MNQ: { t: 0.25, v: 0.5, full: null }, NQ: { t: 0.25, v: 5, micro: "MNQ" },
+    MCL: { t: 0.01, v: 1, full: null }, CL: { t: 0.01, v: 10, micro: "MCL" },
+    MGC: { t: 0.10, v: 1, full: null }, GC: { t: 0.10, v: 10, micro: "MGC" }
+  };
+  var ids = ["acct", "riskPct", "mkt", "bar"];
+  var saved = load("tw-calc2", null);
+  if (saved) ids.forEach(function (id) { if (saved[id] != null) document.getElementById(id).value = saved[id]; });
+  function money(x) { return "$" + x.toFixed(2); }
+  var HINT = { MES: "MES و ES: بالنقاط، مثلا 6.", ES: "MES و ES: بالنقاط، مثلا 6.", MNQ: "ناسداك: بالنقاط، مثلا 24.", NQ: "ناسداك: بالنقاط، مثلا 24.",
+    MCL: "النفط: بالدولار، مثلا 0.20.", CL: "النفط: بالدولار، مثلا 0.20.", MGC: "الذهب: بالدولار، مثلا 4.", GC: "الذهب: بالدولار، مثلا 4." };
+  function dec(t) { return t < 0.1 ? 2 : (t < 1 ? 2 : 0); }
+  function calc() {
+    var acct = parseFloat(document.getElementById("acct").value) || 0;
+    var pct = parseFloat(document.getElementById("riskPct").value) || 0;
+    var key = document.getElementById("mkt").value;
+    var m = M[key];
+    var bar = Math.max(0, Math.round((parseFloat(document.getElementById("bar").value) || 0) / m.t));
+    var stop = bar + 2;
+    document.getElementById("barHint").textContent = HINT[key];
+    var per = stop * m.v;
+    var max = acct * pct / 100;
+    var n = per > 0 ? Math.floor(max / per + 1e-9) : 0;
+    document.getElementById("nOut").textContent = n;
+    document.getElementById("nUnit").textContent = n === 1 ? "عقد" : "عقود";
+    document.getElementById("stopOut").textContent = stop + " تك";
+    document.getElementById("distOut").textContent = (stop * m.t).toFixed(dec(m.t));
+    document.getElementById("perOut").textContent = money(per);
+    document.getElementById("maxOut").textContent = money(max);
+    document.getElementById("totOut").textContent = money(n * per);
+    document.getElementById("tgtOut").textContent = (stop * m.t).toFixed(dec(m.t)) + " (" + stop + " تك)";
+    var note = document.getElementById("calcNote");
+    if (n === 0) {
+      var msg = "ولا عقد. مخاطرة العقد الواحد أكثر من " + pct + "%. خلها، أو ادخل بأمر Limit أعمق عشان الستوب يصغر.";
+      if (m.micro) {
+        var mm = M[m.micro]; var nm = Math.floor(max / (stop * mm.v) + 1e-9);
+        if (nm > 0) msg += " أو استخدم " + m.micro + ": " + nm + (nm === 1 ? " عقد." : " عقود.");
+      }
+      note.className = "note bad"; note.textContent = msg;
+    } else {
+      note.className = "note ok";
+      note.textContent = "داخل حدود " + pct + "%. الهدف بنفس مسافة الستوب.";
+    }
+    var s = {}; ids.forEach(function (id) { s[id] = document.getElementById(id).value; }); store("tw-calc2", s);
+  }
+  ids.forEach(function (id) { document.getElementById(id).addEventListener("input", calc); document.getElementById(id).addEventListener("change", calc); });
+  calc();
+
+  /* daily rules */
+  function today() { var d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+  var dayKey = "tw-day-" + today();
+  var res = load(dayKey, []);
+  if (!Array.isArray(res)) res = [];
+  function render() {
+    var trail = document.getElementById("trail");
+    trail.innerHTML = "";
+    if (!res.length) { var e = document.createElement("span"); e.className = "empty"; e.textContent = "ما في صفقات اليوم."; trail.appendChild(e); }
+    res.forEach(function (r, i) { var p = document.createElement("span"); p.className = "pill " + r; p.textContent = (i + 1) + (r === "W" ? " ربح" : " خسارة"); trail.appendChild(p); });
+    var losses = res.filter(function (r) { return r === "L"; }).length;
+    var tailL = 0, tailW = 0;
+    for (var i = res.length - 1; i >= 0 && res[i] === "L"; i--) tailL++;
+    for (var j = res.length - 1; j >= 0 && res[j] === "W"; j--) tailW++;
+    var on = null, text, cls = "";
+    if (!res.length) { text = "ما بديت. مر على قائمة «قبل كل صفقة»."; }
+    else if (losses >= 3) { on = "r-loss3"; text = "3 خساير اليوم. سكّر المنصة، اليوم خلص."; cls = "v-stop"; }
+    else if (tailL >= 2) { on = "r-loss2"; text = "خسارتين ورا بعض. استراحة ربع ساعة قبل أي صفقة."; cls = "v-b15"; }
+    else if (tailL === 1) { on = "r-loss1"; text = "خسارة. خذ استراحة قصيرة وصفّ راسك."; cls = "v-b5"; }
+    else if (tailW >= 2) { on = "r-win2"; text = tailW + " أرباح ورا بعض. وقّف اليوم وانت رابح، إلا بيوم ترند واضح."; cls = "v-win"; }
+    else { text = "كمل بنفس القواعد."; }
+    var v = document.getElementById("verdict"); v.textContent = text; v.className = "verdict " + cls;
+    ["r-loss1", "r-loss2", "r-loss3", "r-win2"].forEach(function (id) { document.getElementById(id).classList.toggle("on", id === on); });
+    document.getElementById("addW").disabled = losses >= 3;
+    document.getElementById("addL").disabled = losses >= 3;
+    store(dayKey, res);
+  }
+  document.getElementById("addW").addEventListener("click", function () { res.push("W"); render(); });
+  document.getElementById("addL").addEventListener("click", function () { res.push("L"); render(); });
+  document.getElementById("undo").addEventListener("click", function () { res.pop(); render(); });
+  document.getElementById("newDay").addEventListener("click", function () { res = []; render(); });
+  render();
+})();
+</script>
+
+</body></html>
