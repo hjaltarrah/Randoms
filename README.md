@@ -12,6 +12,7 @@
 | Skyhoop | `skyhoop/` |
 | Daqqa | `daqqa/` |
 | دليل توماس ويد | `thomas-wade-guide/` |
+| مؤشر CRT + Second Entry (TradingView) | `crt-indicator/` |
 | ديوانية الذكاء | `ai-diwaniya/` |
 
 اللعب الأونلاين مع الربع يشتغل داخل Claude بس. هني الألعاب تشتغل بدونه.

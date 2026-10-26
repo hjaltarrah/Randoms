@@ -1,0 +1,343 @@
+//@version=6
+indicator("CRT 1H + Thomas Wade Second Entry", "CRT+2E", overlay = true, max_labels_count = 500, max_lines_count = 500)
+
+// ══════════ Inputs ══════════
+gCRT = "CRT setup (higher timeframe)"
+gTW  = "Second entry (Thomas Wade style)"
+gKEP = "Key entry points (KEP)"
+gVis = "Display"
+
+crtTF      = input.timeframe("60", "CRT timeframe", group = gCRT, tooltip = "Setup timeframe (default 1H). Put your chart on 15m for entries.")
+needInside = input.bool(true, "Candle 2 must close inside candle 1", group = gCRT)
+validHTF   = input.int(2, "Setup valid for (CRT candles)", minval = 1, group = gCRT, tooltip = "1 = only during candle 3 (the hour right after the CRT closes).")
+
+emaLen    = input.int(21, "EMA length", minval = 1, group = gTW)
+allowCT   = input.bool(true, "Allow counter-trend signals (faded)", group = gTW, tooltip = "Off = 2EL only above the EMA, 2ES only below.")
+colorFilt = input.bool(true, "Signal bar color filter", group = gTW, tooltip = "2EL needs a green signal bar, 2ES a red one.")
+dojiFilt  = input.bool(true, "Block doji signal bars", group = gTW)
+dojiPct   = input.int(30, "Min body % of bar range", minval = 1, maxval = 100, group = gTW)
+stopMode  = input.string("Signal bar", "Stop loss", options = ["Signal bar", "CRT candle 2"], group = gTW)
+useSess   = input.bool(false, "Only during session", group = gTW)
+sessIn    = input.session("0930-1600", "Session (New York time)", group = gTW)
+
+minKEP  = input.int(1, "Min KEP confluences", minval = 0, maxval = 3, group = gKEP, tooltip = "KEP = EMA, trendline, key level (PDH / PDL / HOD / LOD). 0 = no KEP filter.")
+tolMult = input.float(0.3, "Touch tolerance (x ATR)", minval = 0, step = 0.05, group = gKEP)
+pivLen  = input.int(5, "Trendline swing strength", minval = 1, group = gKEP, tooltip = "Bars on each side of a swing high/low used to draw trendlines.")
+
+showStruct = input.bool(true, "Show pending dots and filtered setups", group = gVis)
+showCRT    = input.bool(true, "Show CRT marks and levels", group = gVis)
+showLvls   = input.bool(true, "Show key levels", group = gVis)
+showTL     = input.bool(true, "Show trendlines", group = gVis)
+showLines  = input.bool(true, "Draw entry / TP / SL lines", group = gVis)
+lineLen    = input.int(12, "Line length (bars)", minval = 1, group = gVis)
+
+// ══════════ CRT (Candle Range Theory) on the higher timeframe ══════════
+// Bullish CRT: candle 2 sweeps candle 1 low and closes back inside -> target = candle 1 high
+// Bearish CRT: candle 2 sweeps candle 1 high and closes back inside -> target = candle 1 low
+crt(int o) =>
+    c1H = high[o + 1]
+    c1L = low[o + 1]
+    c2H = high[o]
+    c2L = low[o]
+    c2C = close[o]
+    bull = c2L < c1L and c2C > c1L and (not needInside or c2C < c1H)
+    bear = c2H > c1H and c2C < c1H and (not needInside or c2C > c1L)
+    [bull and not bear, bear and not bull, c1H, c1L, c2H, c2L]
+
+tfSel  = crtTF == "" ? timeframe.period : crtTF
+isHTF  = timeframe.in_seconds(tfSel) > timeframe.in_seconds(timeframe.period)
+htfNew = timeframe.change(tfSel)
+
+[lBull, lBear, lC1H, lC1L, lC2H, lC2L] = crt(0)
+[hBull, hBear, hC1H, hC1L, hC2H, hC2L] = request.security(syminfo.tickerid, tfSel, crt(1), lookahead = barmerge.lookahead_on)
+
+bullCRT = isHTF ? (hBull and htfNew) : lBull
+bearCRT = isHTF ? (hBear and htfNew) : lBear
+rangeHi = isHTF ? hC1H : lC1H
+rangeLo = isHTF ? hC1L : lC1L
+sweepHi = isHTF ? hC2H : lC2H
+sweepLo = isHTF ? hC2L : lC2L
+
+// ══════════ 0-1-2 second entry engine (entry timeframe) ══════════
+// 0 = start of the pullback, 1 = first attempt, 2 = second attempt (2EL / 2ES)
+var float legHi  = high
+var float legLo  = low
+var float pbHi   = high
+var float pbLo   = low
+var int   hCount = 0
+var int   lCount = 0
+var bool  hArmed = false
+var bool  lArmed = false
+
+newHi = high > legHi
+newLo = low < legLo
+h2 = false
+l2 = false
+
+if newHi
+    legHi  := high
+    hCount := 0
+    hArmed := false
+else
+    if newLo and hCount >= 2
+        legHi  := math.max(pbHi, high)
+        hCount := 0
+    if high < high[1]
+        hArmed := true
+    else if hArmed and high > high[1]
+        hCount += 1
+        hArmed := false
+        h2 := hCount == 2
+
+if newLo
+    legLo  := low
+    lCount := 0
+    lArmed := false
+else
+    if newHi and lCount >= 2
+        legLo  := math.min(pbLo, low)
+        lCount := 0
+    if low > low[1]
+        lArmed := true
+    else if lArmed and low < low[1]
+        lCount += 1
+        lArmed := false
+        l2 := lCount == 2
+
+pbHi := newLo ? high : math.max(pbHi, high)
+pbLo := newHi ? low : math.min(pbLo, low)
+
+// ══════════ Filters ══════════
+emaLine = ta.ema(close, emaLen)
+withL   = close > emaLine
+withS   = close < emaLine
+inSess  = not useSess or not na(time(timeframe.period, sessIn, "America/New_York"))
+
+// signal bar = previous bar (the one whose high/low gets pierced)
+sbBody  = math.abs(close[1] - open[1])
+sbRange = high[1] - low[1]
+sbOK    = not dojiFilt or (sbRange > 0 and sbBody >= sbRange * dojiPct / 100)
+sbGreen = not colorFilt or close[1] > open[1]
+sbRed   = not colorFilt or close[1] < open[1]
+
+// ══════════ Key entry points: key levels + trendlines + EMA ══════════
+[pdh, pdl] = request.security(syminfo.tickerid, "D", [high[1], low[1]], lookahead = barmerge.lookahead_on)
+
+dayNew = timeframe.change("D")
+var float hod = na
+var float lod = na
+if dayNew or na(hod)
+    hod := high
+    lod := low
+else
+    hod := math.max(hod, high)
+    lod := math.min(lod, low)
+
+// trendlines through the last two swing highs / swing lows
+ph = ta.pivothigh(high, pivLen, pivLen)
+pl = ta.pivotlow(low, pivLen, pivLen)
+var float phY1 = na
+var float phY2 = na
+var int   phX1 = na
+var int   phX2 = na
+var float plY1 = na
+var float plY2 = na
+var int   plX1 = na
+var int   plX2 = na
+var line  tlHiLine = na
+var line  tlLoLine = na
+
+if not na(ph)
+    phY1 := phY2
+    phX1 := phX2
+    phY2 := ph
+    phX2 := bar_index - pivLen
+    if showTL and not na(phX1)
+        line.delete(tlHiLine)
+        tlHiLine := line.new(phX1, phY1, phX2, phY2, extend = extend.right, color = color.new(color.fuchsia, 30), width = 1)
+
+if not na(pl)
+    plY1 := plY2
+    plX1 := plX2
+    plY2 := pl
+    plX2 := bar_index - pivLen
+    if showTL and not na(plX1)
+        line.delete(tlLoLine)
+        tlLoLine := line.new(plX1, plY1, plX2, plY2, extend = extend.right, color = color.new(color.aqua, 30), width = 1)
+
+tlHi = na(phX1) ? na : phY1 + (phY2 - phY1) / (phX2 - phX1) * (bar_index - phX1)
+tlLo = na(plX1) ? na : plY1 + (plY2 - plY1) / (plX2 - plX1) * (bar_index - plX1)
+
+// touch test: the last 3 bars reached the level and price closed on the right side of it
+tol    = ta.atr(14) * tolMult
+zoneLo = ta.lowest(low, 3)
+zoneHi = ta.highest(high, 3)
+
+touchSup(float lvl) =>
+    not na(lvl) and zoneLo <= lvl + tol and close > lvl
+touchRes(float lvl) =>
+    not na(lvl) and zoneHi >= lvl - tol and close < lvl
+supName(float lvl, string nm) =>
+    touchSup(lvl) ? nm + " " : ""
+resName(float lvl, string nm) =>
+    touchRes(lvl) ? nm + " " : ""
+
+lvlL  = supName(pdh, "PDH") + supName(pdl, "PDL") + supName(hod, "HOD") + supName(lod, "LOD")
+lvlS  = resName(pdh, "PDH") + resName(pdl, "PDL") + resName(hod, "HOD") + resName(lod, "LOD")
+kEmaL = touchSup(emaLine)
+kEmaS = touchRes(emaLine)
+kTLL  = touchSup(tlLo) or touchSup(tlHi)
+kTLS  = touchRes(tlHi) or touchRes(tlLo)
+kepL  = (kEmaL ? 1 : 0) + (kTLL ? 1 : 0) + (lvlL != "" ? 1 : 0)
+kepS  = (kEmaS ? 1 : 0) + (kTLS ? 1 : 0) + (lvlS != "" ? 1 : 0)
+kepTxtL = (kEmaL ? "EMA " : "") + (kTLL ? "TL " : "") + lvlL
+kepTxtS = (kEmaS ? "EMA " : "") + (kTLS ? "TL " : "") + lvlS
+
+// ══════════ CRT state ══════════
+var bool  bullOn  = false
+var int   bullAge = 0
+var float bullTP  = na
+var float bullSL  = na
+var bool  bearOn  = false
+var int   bearAge = 0
+var float bearTP  = na
+var float bearSL  = na
+
+if bullCRT
+    bullOn  := true
+    bullAge := 0
+    bullTP  := rangeHi
+    bullSL  := sweepLo
+else if bullOn and htfNew
+    bullAge += 1
+    if bullAge >= validHTF
+        bullOn := false
+
+if bearCRT
+    bearOn  := true
+    bearAge := 0
+    bearTP  := rangeLo
+    bearSL  := sweepHi
+else if bearOn and htfNew
+    bearAge += 1
+    if bearAge >= validHTF
+        bearOn := false
+
+// ══════════ Signals ══════════
+setupL = barstate.isconfirmed and bullOn and h2 and inSess and close > bullSL
+setupS = barstate.isconfirmed and bearOn and l2 and inSess and close < bearSL
+
+longSig  = setupL and sbGreen and sbOK and (withL or allowCT) and kepL >= minKEP
+shortSig = setupS and sbRed and sbOK and (withS or allowCT) and kepS >= minKEP
+ctL   = longSig and not withL
+ctS   = shortSig and not withS
+filtL = setupL and not longSig
+filtS = setupS and not shortSig
+
+entryL = high[1] + syminfo.mintick
+entryS = low[1] - syminfo.mintick
+stopL  = stopMode == "Signal bar" ? low[1] - syminfo.mintick : bullSL
+stopS  = stopMode == "Signal bar" ? high[1] + syminfo.mintick : bearSL
+
+// one trade per CRT; cancel if candle 2 extreme is broken or target already reached
+if bullOn and (longSig or close < bullSL or high >= bullTP)
+    bullOn := false
+if bearOn and (shortSig or close > bearSL or low <= bearTP)
+    bearOn := false
+
+// potential setups: next bar piercing this bar = second entry
+curBody  = math.abs(close - open)
+curRange = high - low
+curOK    = not dojiFilt or (curRange > 0 and curBody >= curRange * dojiPct / 100)
+potL = bullOn and hCount == 1 and hArmed and inSess and curOK and (not colorFilt or close > open) and kepL >= minKEP
+potS = bearOn and lCount == 1 and lArmed and inSess and curOK and (not colorFilt or close < open) and kepS >= minKEP
+
+// ══════════ Trade tracking (TP hit or failed second entry) ══════════
+var bool  lLive = false
+var float lSL   = na
+var float lTP   = na
+var bool  sLive = false
+var float sSL   = na
+var float sTP   = na
+failL = false
+winL  = false
+failS = false
+winS  = false
+
+if lLive
+    if low <= lSL
+        failL := true
+        lLive := false
+    else if high >= lTP
+        winL  := true
+        lLive := false
+if longSig
+    lLive := true
+    lSL   := stopL
+    lTP   := bullTP
+
+if sLive
+    if high >= sSL
+        failS := true
+        sLive := false
+    else if low <= sTP
+        winS  := true
+        sLive := false
+if shortSig
+    sLive := true
+    sSL   := stopS
+    sTP   := bearTP
+
+// ══════════ Visuals ══════════
+plot(emaLine, "EMA", color.orange, 1)
+
+plot(showLvls ? pdh : na, "PDH", color.new(color.navy, 20), 1, plot.style_stepline)
+plot(showLvls ? pdl : na, "PDL", color.new(color.navy, 20), 1, plot.style_stepline)
+plot(showLvls ? hod : na, "HOD", color.new(color.gray, 30), 1, plot.style_stepline)
+plot(showLvls ? lod : na, "LOD", color.new(color.gray, 30), 1, plot.style_stepline)
+
+plot(showCRT and bullOn ? bullTP : na, "Bull CRT target", color.new(color.green, 40), 1, plot.style_linebr)
+plot(showCRT and bullOn ? bullSL : na, "Bull CRT sweep low", color.new(color.teal, 40), 1, plot.style_linebr)
+plot(showCRT and bearOn ? bearTP : na, "Bear CRT target", color.new(color.red, 40), 1, plot.style_linebr)
+plot(showCRT and bearOn ? bearSL : na, "Bear CRT sweep high", color.new(color.maroon, 40), 1, plot.style_linebr)
+
+plotshape(showCRT and bullCRT, "Bullish CRT", shape.triangleup, location.belowbar, color.new(color.teal, 20), text = "CRT", textcolor = color.teal, size = size.tiny)
+plotshape(showCRT and bearCRT, "Bearish CRT", shape.triangledown, location.abovebar, color.new(color.maroon, 20), text = "CRT", textcolor = color.maroon, size = size.tiny)
+
+plot(showStruct and potL ? high + syminfo.mintick : na, "Pending 2EL order", color.new(color.blue, 50), 3, plot.style_circles, offset = 1)
+plot(showStruct and potS ? low - syminfo.mintick : na, "Pending 2ES order", color.new(color.purple, 50), 3, plot.style_circles, offset = 1)
+
+plot(longSig ? entryL : na, "2EL entry", color.new(color.green, ctL ? 50 : 0), 4, plot.style_circles)
+plot(shortSig ? entryS : na, "2ES entry", color.new(color.red, ctS ? 50 : 0), 4, plot.style_circles)
+plot(showStruct and filtL ? entryL : na, "Filtered 2EL", color.new(color.gray, 40), 3, plot.style_circles)
+plot(showStruct and filtS ? entryS : na, "Filtered 2ES", color.new(color.gray, 40), 3, plot.style_circles)
+
+plotshape(failL, "F2EL (failed)", shape.xcross, location.belowbar, color.gray, text = "F2EL", textcolor = color.gray, size = size.tiny)
+plotshape(failS, "F2ES (failed)", shape.xcross, location.abovebar, color.gray, text = "F2ES", textcolor = color.gray, size = size.tiny)
+plotshape(winL, "2EL target hit", shape.diamond, location.abovebar, color.green, text = "TP", textcolor = color.green, size = size.tiny)
+plotshape(winS, "2ES target hit", shape.diamond, location.belowbar, color.red, text = "TP", textcolor = color.red, size = size.tiny)
+
+rr(float e, float s, float t) =>
+    math.abs(t - e) / math.max(math.abs(e - s), syminfo.mintick)
+
+if longSig
+    txtL = "2EL" + (ctL ? " (CT)" : "") + "\nEntry " + str.tostring(entryL, format.mintick) + "\nTP " + str.tostring(bullTP, format.mintick) + "\nSL " + str.tostring(stopL, format.mintick) + "\nRR " + str.tostring(rr(entryL, stopL, bullTP), "#.#") + "\nKEP " + (kepTxtL == "" ? "-" : kepTxtL)
+    label.new(bar_index, na, txtL, yloc = yloc.belowbar, style = label.style_label_up, color = color.new(color.green, ctL ? 50 : 0), textcolor = color.white, size = size.small)
+    if showLines
+        line.new(bar_index, bullTP, bar_index + lineLen, bullTP, color = color.green, style = line.style_dashed, width = 2)
+        line.new(bar_index, stopL, bar_index + lineLen, stopL, color = color.red, style = line.style_dashed, width = 2)
+        line.new(bar_index, entryL, bar_index + lineLen, entryL, color = color.gray, style = line.style_dotted)
+
+if shortSig
+    txtS = "2ES" + (ctS ? " (CT)" : "") + "\nEntry " + str.tostring(entryS, format.mintick) + "\nTP " + str.tostring(bearTP, format.mintick) + "\nSL " + str.tostring(stopS, format.mintick) + "\nRR " + str.tostring(rr(entryS, stopS, bearTP), "#.#") + "\nKEP " + (kepTxtS == "" ? "-" : kepTxtS)
+    label.new(bar_index, na, txtS, yloc = yloc.abovebar, style = label.style_label_down, color = color.new(color.red, ctS ? 50 : 0), textcolor = color.white, size = size.small)
+    if showLines
+        line.new(bar_index, bearTP, bar_index + lineLen, bearTP, color = color.green, style = line.style_dashed, width = 2)
+        line.new(bar_index, stopS, bar_index + lineLen, stopS, color = color.red, style = line.style_dashed, width = 2)
+        line.new(bar_index, entryS, bar_index + lineLen, entryS, color = color.gray, style = line.style_dotted)
+
+// ══════════ Alerts ══════════
+alertcondition(potL, "Potential 2EL after 1H CRT", "Potential second entry long on {{ticker}}: buy stop above this bar")
+alertcondition(potS, "Potential 2ES after 1H CRT", "Potential second entry short on {{ticker}}: sell stop below this bar")
+alertcondition(longSig, "2EL after 1H CRT", "Second entry LONG after bullish 1H CRT on {{ticker}} at {{close}}")
+alertcondition(shortSig, "2ES after 1H CRT", "Second entry SHORT after bearish 1H CRT on {{ticker}} at {{close}}")
