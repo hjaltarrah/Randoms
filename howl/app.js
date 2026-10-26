@@ -37,7 +37,8 @@
 
   /* ================= HOST ================= */
   const hp = id => HS.players.find(p => p.id === id);
-  const isOnline = p => !!p && !p.left && (p.id === HS.hostId || now() - p.last < OFFLINE_MS);
+  const isOnline = p => !!p && !p.left && (p.id === HS.hostId || p.bot || now() - p.last < OFFLINE_MS);
+  const BOT_NAMES = ['Bader', 'Hessa', 'Jassim', 'Lulwa', 'Mishari', 'Shaikha', 'Talal', 'Dalal', 'Nawaf', 'Ghala', 'Saud'];
   const inRound = id => !!(HS.g && HS.g.seats.includes(id));
   const activeIds = () => HS.players.filter(p => !p.waiting && !p.left).map(p => p.id);
   function genCode() { const a = new Uint8Array(4); crypto.getRandomValues(a); return Array.from(a, x => CODE_ABC[x % CODE_ABC.length]).join(''); }
@@ -142,10 +143,17 @@
       if (k === 'pace' && PACE[v]) HS.settings.pace = v;
       store.set('settings', HS.settings); changed();
     },
+    addBot() {
+      if (HS.phase !== 'lobby' || HS.players.filter(x => !x.left).length >= H.MAX_PLAYERS) return;
+      const used = new Set(HS.players.map(p => p.name));
+      const name = uniqueName(BOT_NAMES.find(n => !used.has(n)) || 'Bot');
+      HS.players.push({ id: N.rid(6), secret: 'bot-' + N.rid(12), name, color: freeColor(), last: now(), bot: true });
+      changed();
+    },
     kick(id) {
       const p = hp(id);
       if (!p || p.id === HS.hostId) return;
-      C.link.pub('p/' + p.secret, { kicked: 1 }, true);
+      if (!p.bot) C.link.pub('p/' + p.secret, { kicked: 1 }, true);
       HS.players = HS.players.filter(x => x !== p); delete C.lastPriv[p.id];
       if (HS.g && inRound(id)) p.left = true;
       changed();
@@ -199,9 +207,36 @@
     HS.phase = 'reveal'; changed();
   }
 
+  /* test bots: they live on the host's phone and play at random */
+  const botAt = {};
+  function botDue(key, t, min, max) { if (!(key in botAt)) botAt[key] = t + (min + Math.random() * (max - min)) * 1000 * SPEED; return t >= botAt[key]; }
+  function botAct(g, id) {
+    const s = g.pending[id], others = g.seats.filter(x => x !== id), some = n => H.shuffle(others).slice(0, n);
+    if (s.optional && Math.random() < 0.2) { H.act(g, id, { skip: true }); return; }
+    if (s.kind === 'player') H.act(g, id, { players: some(s.n) });
+    else if (s.kind === 'center') H.act(g, id, { center: [Math.floor(Math.random() * 3)] });
+    else H.act(g, id, Math.random() < 0.5 ? { players: some(1) } : { center: H.shuffle([0, 1, 2]).slice(0, 2) });
+  }
+  function botTick(t) {
+    const g = HS.g;
+    if (!g) return;
+    for (const b of HS.players) {
+      if (!b.bot || !g.seats.includes(b.id)) continue;
+      const id = b.id, k = HS.roundNo + '|' + id;
+      if (HS.phase === 'roles' && !HS.ready[id] && botDue('r' + k, t, 1, 3)) { HS.ready[id] = 1; changed(); }
+      else if (HS.phase === 'night' && g.pending[id] && botDue(`n${k}|${g.si}|${g.pending[id].as}`, t, 1.5, 5)) { botAct(g, id); changed(); }
+      else if (HS.phase === 'day' && !HS.voteReady[id] && botDue('d' + k, t, 2, 6)) { HS.voteReady[id] = 1; changed(); }
+      else if (HS.phase === 'vote' && !HS.locked[id] && botDue('v' + k, t, 1.5, 6)) {
+        const others = g.seats.filter(x => x !== id);
+        HS.votes[id] = others[Math.floor(Math.random() * others.length)]; HS.locked[id] = 1; changed();
+      }
+    }
+  }
+
   function hostTick() {
     if (!HS) return;
     const t = now(), g = HS.g;
+    botTick(t);
     const sig = HS.players.map(p => (isOnline(p) ? 1 : 0)).join('');
     if (sig !== C.onlineSig) { C.onlineSig = sig; changed(); }
     const here = () => g.seats.filter(id => isOnline(hp(id)));
@@ -217,6 +252,7 @@
       v: 1, code: S.code, phase: S.phase, round: S.roundNo, host: S.hostId, deck: S.deck, settings: S.settings,
       players: S.players.map(p => {
         const o = { id: p.id, name: p.name, c: p.color, on: isOnline(p) ? 1 : 0 };
+        if (p.bot) o.bot = 1;
         if (p.waiting) o.w = 1;
         if (p.left) o.left = 1;
         if (S.phase === 'roles' && S.ready[p.id]) o.rd = 1;
@@ -261,7 +297,7 @@
     if (!HS) return;
     const pv = publicView(), key = JSON.stringify(pv);
     if (C.link && (force || key !== C.lastPubKey)) { C.lastPubKey = key; C.link.pub('s', Object.assign({ now: now() }, pv), true); }
-    for (const p of HS.players) if (p.id !== HS.hostId) flushPriv(p, force);
+    for (const p of HS.players) if (p.id !== HS.hostId && !p.bot) flushPriv(p, force);
     C.pub = pv; C.priv = privateView(HS.hostId); C.skew = 0; C.lastBeat = now();
     store.set('host', HS);
     render();
@@ -276,7 +312,7 @@
     if (!HS) return;
     const link = C.link, players = HS.players.slice();
     link.pub('s', { closed: 1, code: HS.code }, true);
-    players.forEach(p => { if (p.id !== HS.hostId) link.pub('p/' + p.secret, null, true); });
+    players.forEach(p => { if (p.id !== HS.hostId && !p.bot) link.pub('p/' + p.secret, null, true); });
     setTimeout(() => { link.pub('s', null, true); setTimeout(() => link.end(), 800); }, 1500);
     clearInterval(C.hostTimer); clearInterval(C.beatTimer);
     HS = null; store.del('host');
@@ -470,6 +506,7 @@
       const sub = [];
       if (p.id === myId()) sub.push('you');
       if (p.id === pub.host) sub.push('host');
+      if (p.bot) sub.push('bot');
       if (p.left) sub.push('left');
       else if (!p.on) sub.push('offline');
       if (p.w) sub.push('next round');
@@ -593,6 +630,7 @@
         <p class="small muted">Friends open this page and type the code, or tap your invite link.</p>
         <div class="row"><button class="btn small" data-act="share">Share invite</button><a class="btn small" href="https://wa.me/?text=${encodeURIComponent('Join my Howl game! Room ' + pub.code + ': ' + roomUrl(pub.code))}" target="_blank" rel="noopener">Send on WhatsApp</a></div></section>
       <section class="panel"><h3>Players <span class="muted">${n} of ${H.MAX_PLAYERS}</span></h3>${playersList({ kick: true })}
+        ${host && n < H.MAX_PLAYERS ? '<button class="btn small" data-act="addbot">Add a test bot</button><p class="small muted">Bots play at random, so you can try the game on your own. Tap ✕ to remove one.</p>' : ''}
         ${host ? '<p class="small muted">Keep this phone’s screen on while you host. The game runs on it.</p>' : ''}</section>
       ${deckPart}</main>${foot}`;
   }
@@ -751,7 +789,8 @@
     noop: () => {},
     leave: () => { send('leave'); setTimeout(() => endSession(''), 250); },
     closeroom: () => { if (confirm('Close the room? Everyone will be sent back to the start.')) closeRoom(); },
-    kick: el => { const p = pl(el.dataset.arg); if (confirm(`Remove ${p.name} from the room?`)) hostCmd.kick(el.dataset.arg); },
+    addbot: () => hostCmd.addBot(),
+    kick: el => { const p = pl(el.dataset.arg); if (p.bot || confirm(`Remove ${p.name} from the room?`)) hostCmd.kick(el.dataset.arg); },
     deck: el => hostCmd.deck(el.dataset.arg, +el.dataset.d),
     suggest: () => hostCmd.suggest(),
     setting: el => hostCmd.setting(el.dataset.arg, el.dataset.v),
